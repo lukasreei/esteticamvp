@@ -1,0 +1,1489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>MVP Estética – Sistema de Agendamentos</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+
+<aside>
+  <h2>Área Profissional</h2>
+  <a href="#" onclick="mostrar('dashboard')"><i class="fas fa-chart-line"></i> Dashboard</a>
+  <a href="#" onclick="mostrar('agenda')"><i class="fas fa-calendar-alt"></i> Agenda</a>
+  <a href="#" onclick="mostrar('sessoes')"><i class="fas fa-clock"></i> Sessões</a>
+  <a href="#" onclick="mostrar('clientes')"><i class="fas fa-users"></i> Clientes</a>
+  <a href="#" onclick="mostrar('fluxo')"><i class="fas fa-cash-register"></i> Fluxo de Caixa</a>
+  <a href="#" onclick="mostrar('relatorios')"><i class="fas fa-file-alt"></i> Relatórios</a>
+</aside>
+
+<main>
+
+<section id="dashboard" class="active">
+  <h1><i class="fas fa-chart-line"></i> Dashboard</h1>
+  <div class="cards">
+    <div class="card">
+      <i class="fas fa-calendar-day card-icon"></i>
+      Hoje<br><strong>R$ <span id="dia">0</span></strong>
+    </div>
+    <div class="card">
+      <i class="fas fa-calendar-week card-icon"></i>
+      Semana<br><strong>R$ <span id="semana">0</span></strong>
+    </div>
+    <div class="card">
+      <i class="fas fa-users card-icon"></i>
+      Atendidos<br><strong><span id="atendidosHoje">0</span></strong>
+    </div>
+    <div class="card">
+      <i class="fas fa-times-circle card-icon"></i>
+      Cancelados<br><strong><span id="canceladosHoje">0</span></strong>
+    </div>
+    <div class="card">
+      <i class="fas fa-calendar-alt card-icon"></i>
+      Mês<br><strong>R$ <span id="mes">0</span></strong>
+    </div>
+    <div class="card">
+      <i class="fas fa-balance-scale card-icon"></i>
+      Saldo<br><strong>R$ <span id="saldoDashboard">0</span></strong>
+    </div>
+  </div>
+</section>
+
+<section id="agenda">
+  <h1><i class="fas fa-calendar-alt"></i> Agenda</h1>
+
+  <div class="form-container">
+    <div class="form-grid">
+      <select id="agendaCliente"></select>
+      <select id="agendaProcedimento">
+        <option value="">Selecione o procedimento</option>
+        <option value="Limpeza de Pele">Limpeza de Pele</option>
+        <option value="Hidratação Facial">Hidratação Facial</option>
+        <option value="Massagem Relaxante">Massagem Relaxante</option>
+        <option value="Tratamento Anti-idade">Tratamento Anti-idade</option>
+        <option value="Depilação">Depilação</option>
+        <option value="Manicure/Pedicure">Manicure/Pedicure</option>
+        <option value="Corte de Cabelo">Corte de Cabelo</option>
+        <option value="Coloração">Coloração</option>
+        <option value="Tratamento Capilar">Tratamento Capilar</option>
+        <option value="Outro">Outro</option>
+      </select>
+      <input id="agendaData" type="date" />
+      <input id="agendaHora" type="time" />
+      <input id="agendaDuracao" type="number" placeholder="Duração (min)" value="60" />
+    </div>
+    <textarea id="agendaObservacoes" placeholder="Observações (opcional)" rows="2" style="width:100%;margin-bottom:12px"></textarea>
+    <button class="btn" onclick="adicionarAgenda()"><i class="fas fa-plus"></i> Agendar</button>
+  </div>
+
+  <div class="filtros-container" style="margin:20px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <div>
+      <label><i class="fas fa-filter"></i> Status:</label>
+      <select id="filtroStatus" onchange="filtrarAgenda()">
+        <option value="">Todos</option>
+        <option value="agendado">Agendado</option>
+        <option value="confirmado">Confirmado</option>
+        <option value="cancelado">Cancelado</option>
+        <option value="realizado">Realizado</option>
+      </select>
+    </div>
+    <div>
+      <label><i class="fas fa-calendar"></i> Data:</label>
+      <input id="filtroData" type="date" onchange="filtrarAgenda()" />
+    </div>
+    <button class="btn secondary" onclick="limparFiltros()"><i class="fas fa-times"></i> Limpar Filtros</button>
+  </div>
+
+  <!-- Visualização em Grade -->
+  <div class="agenda-grade-container">
+    <div class="agenda-grade-header">
+      <button class="btn secondary small" onclick="mudarSemana(-1)"><i class="fas fa-chevron-left"></i></button>
+      <h3 id="semanaAtual">Semana Atual</h3>
+      <button class="btn secondary small" onclick="mudarSemana(1)"><i class="fas fa-chevron-right"></i></button>
+    </div>
+    
+    <div class="agenda-grade">
+      <table id="tabelaAgenda" class="agenda-tabela">
+        <thead>
+          <tr>
+            <th>Horário</th>
+            <th id="dia0">Dom</th>
+            <th id="dia1">Seg</th>
+            <th id="dia2">Ter</th>
+            <th id="dia3">Qua</th>
+            <th id="dia4">Qui</th>
+            <th id="dia5">Sex</th>
+            <th id="dia6">Sáb</th>
+          </tr>
+        </thead>
+        <tbody id="corpoAgenda">
+          <!-- Horários serão preenchidos dinamicamente -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Lista de agendamentos (modo alternativo) -->
+  <div id="listaAgenda" class="agenda-container" style="display:none;"></div>
+</section>
+
+<section id="sessoes">
+  <h1>Sessões</h1>
+  <h2 style="font-size:16px;margin-bottom:8px">Próximos atendimentos</h2>
+  <ul id="listaSessoes">
+    <!-- Sessões serão renderizadas dinamicamente a partir dos agendamentos -->
+  </ul>
+
+  <h2 style="font-size:16px;margin:18px 0 8px 0">Histórico de sessões</h2>
+  
+  <div class="historico-filtros" style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <input id="historicoBusca" type="text" placeholder="Buscar por cliente..." onkeyup="filtrarHistorico()" style="flex:1;min-width:200px" />
+    <select id="historicoMes" onchange="filtrarHistorico()">
+      <option value="">Todos os meses</option>
+      <option value="01">Janeiro</option>
+      <option value="02">Fevereiro</option>
+      <option value="03">Março</option>
+      <option value="04">Abril</option>
+      <option value="05">Maio</option>
+      <option value="06">Junho</option>
+      <option value="07">Julho</option>
+      <option value="08">Agosto</option>
+      <option value="09">Setembro</option>
+      <option value="10">Outubro</option>
+      <option value="11">Novembro</option>
+      <option value="12">Dezembro</option>
+    </select>
+    <input id="historicoData" type="date" onchange="filtrarHistorico()" />
+    <button class="btn secondary small" onclick="limparFiltrosHistorico()"><i class="fas fa-times"></i> Limpar</button>
+  </div>
+
+  <div class="historico-container">
+    <table id="tabelaHistorico" class="historico-tabela">
+      <thead>
+        <tr>
+          <th onclick="ordenarHistorico('data')" style="cursor:pointer">Data/Hora <i class="fas fa-sort"></i></th>
+          <th onclick="ordenarHistorico('cliente')" style="cursor:pointer">Cliente <i class="fas fa-sort"></i></th>
+          <th onclick="ordenarHistorico('procedimento')" style="cursor:pointer">Procedimento <i class="fas fa-sort"></i></th>
+          <th onclick="ordenarHistorico('valor')" style="cursor:pointer">Valor <i class="fas fa-sort"></i></th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody id="corpoHistorico">
+        <!-- Histórico será preenchido dinamicamente -->
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section id="clientes">
+  <h1><i class="fas fa-users"></i> Clientes</h1>
+
+  <div style="margin-bottom: 24px;">
+    <a href="novo-cliente.html" class="btn"><i class="fas fa-user-plus"></i> Novo Cliente</a>
+    <button class="btn secondary" onclick="exportarClientes()" style="margin-left: 12px;">
+      <i class="fas fa-download"></i> Exportar Dados
+    </button>
+  </div>
+
+  <ul id="listaClientes"></ul>
+</section>
+
+<section id="fluxo">
+  <h1><i class="fas fa-cash-register"></i> Fluxo de Caixa</h1>
+
+  <div class="form-container">
+    <h3>Registrar Despesa</h3>
+    <div class="form-grid">
+      <input id="despesaDescricao" placeholder="Descrição da despesa" />
+      <input id="despesaValor" type="number" step="0.01" placeholder="Valor (R$)" />
+      <input id="despesaData" type="date" />
+      <select id="despesaCategoria">
+        <option value="">Categoria</option>
+        <option value="Materiais">Materiais</option>
+        <option value="Equipamentos">Equipamentos</option>
+        <option value="Aluguel">Aluguel</option>
+        <option value="Salários">Salários</option>
+        <option value="Marketing">Marketing</option>
+        <option value="Outros">Outros</option>
+      </select>
+    </div>
+    <button class="btn" onclick="adicionarDespesa()"><i class="fas fa-plus"></i> Adicionar Despesa</button>
+  </div>
+
+  <div class="fluxo-resumo">
+    <div class="card">
+      <i class="fas fa-arrow-up card-icon"></i>
+      <strong id="totalEntradas">R$ 0,00</strong>
+      Entradas
+    </div>
+    <div class="card">
+      <i class="fas fa-arrow-down card-icon"></i>
+      <strong id="totalSaidas">R$ 0,00</strong>
+      Saídas
+    </div>
+    <div class="card">
+      <i class="fas fa-balance-scale card-icon"></i>
+      <strong id="saldoAtual">R$ 0,00</strong>
+      Saldo Atual
+    </div>
+  </div>
+
+  <h3>Histórico de Movimentações</h3>
+  
+  <div class="historico-filtros" style="margin-bottom:16px;display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <input id="fluxoBusca" type="text" placeholder="Buscar por descrição..." onkeyup="filtrarFluxo()" style="flex:1;min-width:200px" />
+    <select id="fluxoTipo" onchange="filtrarFluxo()">
+      <option value="">Todos os tipos</option>
+      <option value="entrada">Entradas</option>
+      <option value="saida">Saídas</option>
+    </select>
+    <select id="fluxoCategoria" onchange="filtrarFluxo()">
+      <option value="">Todas as categorias</option>
+      <option value="Receita">Receita</option>
+      <option value="Materiais">Materiais</option>
+      <option value="Equipamentos">Equipamentos</option>
+      <option value="Aluguel">Aluguel</option>
+      <option value="Salários">Salários</option>
+      <option value="Marketing">Marketing</option>
+      <option value="Outros">Outros</option>
+    </select>
+    <input id="fluxoDataInicio" type="date" onchange="filtrarFluxo()" />
+    <input id="fluxoDataFim" type="date" onchange="filtrarFluxo()" />
+    <button class="btn secondary small" onclick="limparFiltrosFluxo()"><i class="fas fa-times"></i> Limpar</button>
+  </div>
+
+  <table id="tabelaFluxo" class="fluxo-table">
+    <thead>
+      <tr>
+        <th onclick="ordenarFluxo('data')" style="cursor:pointer">Data <i class="fas fa-sort"></i></th>
+        <th onclick="ordenarFluxo('descricao')" style="cursor:pointer">Descrição <i class="fas fa-sort"></i></th>
+        <th onclick="ordenarFluxo('categoria')" style="cursor:pointer">Categoria <i class="fas fa-sort"></i></th>
+        <th>Entrada</th>
+        <th>Saída</th>
+        <th>Saldo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="corpoTabelaFluxo">
+    </tbody>
+  </table>
+
+  <div style="margin-top:20px;text-align:right">
+    <button class="btn" onclick="exportarFluxoPDF()"><i class="fas fa-file-pdf"></i> Exportar Fluxo de Caixa em PDF</button>
+  </div>
+</section>
+
+<!-- Modal para editar cliente -->
+<div id="clienteModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <h3><i class="fas fa-user-edit"></i> Editar cliente</h3>
+    <div class="form-grid">
+      <input id="modalNome" placeholder="Nome" />
+      <input id="modalIdade" placeholder="Idade" />
+      <input id="modalAlergia" placeholder="Alergia (se houver)" />
+      <input id="modalFoto" type="file" accept="image/*" />
+    </div>
+    <div class="anamnesis-fields">
+      <h4>Anamnese</h4>
+      <div class="form-grid">
+        <textarea id="modalAnamnesisQueixa" placeholder="Queixa Principal: O motivo da consulta" rows="2"></textarea>
+        <textarea id="modalAnamnesisDoenca" placeholder="Histórico da Doença Atual..." rows="2"></textarea>
+        <textarea id="modalAnamnesisMedico" placeholder="Histórico Médico Pregresso..." rows="2"></textarea>
+        <textarea id="modalAnamnesisMedicamentos" placeholder="Medicamentos..." rows="2"></textarea>
+        <textarea id="modalAnamnesisHabitos" placeholder="Hábitos de Vida..." rows="2"></textarea>
+        <textarea id="modalAnamnesisFamiliares" placeholder="Antecedentes Familiares..." rows="2"></textarea>
+        <textarea id="modalAnamnesisPessoais" placeholder="Dados Pessoais..." rows="2"></textarea>
+      </div>
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="salvarEdicaoCliente()"><i class="fas fa-save"></i> Salvar</button>
+      <button class="btn secondary" onclick="fecharModalCliente()"><i class="fas fa-times"></i> Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para detalhes da sessão -->
+<div id="sessaoModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <h3><i class="fas fa-eye"></i> Detalhes da Sessão</h3>
+    <div id="sessaoDetalhes">
+      <!-- Detalhes serão preenchidos dinamicamente -->
+    </div>
+    <div class="actions">
+      <button class="btn secondary" onclick="fecharModalSessao()"><i class="fas fa-times"></i> Fechar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para detalhes da movimentação -->
+<div id="fluxoModal" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <h3><i class="fas fa-cash-register"></i> Detalhes da Movimentação</h3>
+    <div id="fluxoDetalhes">
+      <!-- Detalhes serão preenchidos dinamicamente -->
+    </div>
+    <div class="actions">
+      <button class="btn secondary" onclick="fecharModalFluxo()"><i class="fas fa-times"></i> Fechar</button>
+    </div>
+  </div>
+</div>
+
+<section id="relatorios">
+  <h1>Relatórios</h1>
+
+  <h2>Relatório de Atendimentos</h2>
+  <div style="margin-bottom:20px">
+    <label>Mês:</label>
+    <select id="mesFiltroAtendimentos" onchange="filtrarRelatorioAtendimentos()">
+      <option value="">Selecione</option>
+      <option value="01">Janeiro</option>
+      <option value="02">Fevereiro</option>
+      <option value="03">Março</option>
+      <option value="04">Abril</option>
+      <option value="05">Maio</option>
+      <option value="06">Junho</option>
+      <option value="07">Julho</option>
+      <option value="08">Agosto</option>
+      <option value="09">Setembro</option>
+      <option value="10">Outubro</option>
+      <option value="11">Novembro</option>
+      <option value="12">Dezembro</option>
+    </select>
+  </div>
+  <ul id="listaRelatorioAtendimentos"></ul>
+  <h3 id="totalRelatorioAtendimentos"></h3>
+  <canvas id="graficoAtendimentos" width="600" height="300"></canvas>
+
+  <h2>Relatório de Clientes</h2>
+  <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px">
+    <div>
+      <label>Período:</label>
+      <select id="periodoClientes" onchange="filtrarRelatorioClientes()">
+        <option value="mensal">Mensal</option>
+        <option value="semanal">Semanal</option>
+      </select>
+    </div>
+    <div id="mesContainerClientes">
+      <label>Mês:</label>
+      <select id="mesFiltroClientes" onchange="filtrarRelatorioClientes()">
+        <option value="">Selecione</option>
+        <option value="01">Janeiro</option>
+        <option value="02">Fevereiro</option>
+        <option value="03">Março</option>
+        <option value="04">Abril</option>
+        <option value="05">Maio</option>
+        <option value="06">Junho</option>
+        <option value="07">Julho</option>
+        <option value="08">Agosto</option>
+        <option value="09">Setembro</option>
+        <option value="10">Outubro</option>
+        <option value="11">Novembro</option>
+        <option value="12">Dezembro</option>
+      </select>
+    </div>
+  </div>
+  <ul id="listaRelatorioClientes"></ul>
+  <h3 id="totalRelatorioClientes"></h3>
+  <canvas id="graficoClientes" width="600" height="300"></canvas>
+
+  <div style="margin-top:20px;text-align:right">
+    <button class="btn" onclick="exportarRelatoriosPDF()"><i class="fas fa-file-pdf"></i> Exportar Relatórios em PDF</button>
+  </div>
+</section>
+
+</main>
+
+  <script src="dashboard.js"></script>
+  <script src="sessions.js"></script>
+  <script src="agenda.js"></script>
+
+<script>
+  // ====== ESTADO GLOBAL ======
+  window.atendimentosConcluidos = [];
+  window.despesas = [];
+window.clientes = [];
+window.agenda = [];
+  let totalDia = 0;
+  let totalSemana = 0;
+  let totalMes = 0;
+
+  
+
+  // ====== PERSISTÊNCIA ======
+  function generateId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2,8);
+  }
+  function saveState() {
+    try {
+      localStorage.setItem('est_clientes', JSON.stringify(window.clientes));
+      localStorage.setItem('est_agenda', JSON.stringify(window.agenda));
+      localStorage.setItem('est_atendimentos', JSON.stringify(window.atendimentosConcluidos));
+      localStorage.setItem('est_despesas', JSON.stringify(window.despesas));
+    } catch (e) { console.warn('Não foi possível salvar estado:', e); }
+  }
+
+  function loadState() {
+    try {
+      const c = localStorage.getItem('est_clientes');
+      const a = localStorage.getItem('est_agenda');
+      const at = localStorage.getItem('est_atendimentos');
+      const d = localStorage.getItem('est_despesas');
+      if (c) {
+        const parsed = JSON.parse(c);
+        window.clientes.length = 0; parsed.forEach(x => window.clientes.push(x));
+      }
+      if (a) {
+        const parsed = JSON.parse(a);
+        // Migrar agendamentos antigos para novo formato
+        const migrated = parsed.map(ag => {
+          if (!ag.id) {
+            ag.id = generateId();
+            ag.status = ag.status || 'agendado';
+            ag.duracao = ag.duracao || 60;
+            ag.observacoes = ag.observacoes || '';
+            ag.criadoEm = ag.criadoEm || new Date().toISOString();
+          }
+          // Migrar agendamentos antigos sem procedimento
+          if (!ag.procedimento) {
+            ag.procedimento = 'Não especificado';
+          }
+          return ag;
+        });
+        window.agenda.length = 0; migrated.forEach(x => window.agenda.push(x));
+      }
+      if (at) {
+        const parsed = JSON.parse(at);
+        window.atendimentosConcluidos.length = 0; parsed.forEach(x => window.atendimentosConcluidos.push(x));
+      }
+      if (d) {
+        const parsed = JSON.parse(d);
+        window.despesas.length = 0; parsed.forEach(x => window.despesas.push(x));
+      }
+    } catch (e) { console.warn('Não foi possível carregar estado:', e); }
+    recomputeTotals();
+    filtrarRelatorioAtendimentos();
+    filtrarRelatorioClientes();
+  }
+
+  function recomputeTotals() {
+    if (window.Dashboard && typeof window.Dashboard.recomputeTotals === 'function') {
+      return window.Dashboard.recomputeTotals();
+    }
+  }
+
+  // ====== NAVEGAÇÃO ======
+  function mostrar(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  // ====== SESSÕES ======
+  function concluirSessao(btn) {
+    if (window.SessionsModule && typeof window.SessionsModule.conclude === 'function') {
+      return window.SessionsModule.conclude(btn);
+    }
+  }
+
+  // ====== RELATÓRIO + GRÁFICO ======
+
+function renderClientes() {
+  const ul = document.getElementById('listaClientes');
+  const select = document.getElementById('agendaCliente');
+  ul.innerHTML = '';
+  select.innerHTML = '<option value="">Selecione o cliente</option>';
+
+  window.clientes.forEach((c, i) => {
+    const li = document.createElement('li');
+
+    // Foto do cliente
+    const fotoHtml = c.foto ?
+      `<img src="${c.foto}" alt="Foto de ${c.nome}">` :
+      `<div style="width:60px;height:60px;border-radius:50%;background:#e5e7eb;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:24px;"><i class="fas fa-user"></i></div>`;
+
+    li.innerHTML = `
+      ${fotoHtml}
+      <div class="cliente-info">
+        <div class="cliente-nome">${c.nome}</div>
+        <div class="cliente-detalhes">
+          Idade: ${c.idade || 'Não informada'}<br>
+          ${c.alergia ? `Alergias: ${c.alergia}` : 'Sem alergias registradas'}
+        </div>
+      </div>
+      <div class="cliente-acoes">
+        <button class="btn secondary" onclick="window.open('client.html?id=${encodeURIComponent(c.id)}', '_blank')">
+          <i class="fas fa-eye"></i> Ver Detalhes
+        </button>
+        <button class="btn secondary" onclick="editarCliente(${i})">
+          <i class="fas fa-edit"></i> Editar
+        </button>
+        <button class="btn secondary" onclick="removerCliente(${i})">
+          <i class="fas fa-trash"></i> Remover
+        </button>
+      </div>
+    `;
+
+    ul.appendChild(li);
+
+    const opt = document.createElement('option');
+    opt.value = c.id;
+    opt.innerText = c.nome;
+    select.appendChild(opt);
+  });
+}
+
+let _clienteEditIndex = null;
+function editarCliente(index) { abrirModalCliente(index); }
+
+function abrirModalCliente(index) {
+  const cliente = window.clientes[index];
+  if (!cliente) return;
+  _clienteEditIndex = index;
+  document.getElementById('modalNome').value = cliente.nome;
+  document.getElementById('modalIdade').value = cliente.idade || '';
+  document.getElementById('modalAlergia').value = cliente.alergia || '';
+  const anamnesis = cliente.anamnesis || {};
+  document.getElementById('modalAnamnesisQueixa').value = anamnesis.queixaPrincipal || '';
+  document.getElementById('modalAnamnesisDoenca').value = anamnesis.historicoDoenca || '';
+  document.getElementById('modalAnamnesisMedico').value = anamnesis.historicoMedico || '';
+  document.getElementById('modalAnamnesisMedicamentos').value = anamnesis.medicamentos || '';
+  document.getElementById('modalAnamnesisHabitos').value = anamnesis.habitosVida || '';
+  document.getElementById('modalAnamnesisFamiliares').value = anamnesis.antecedentesFamiliares || '';
+  document.getElementById('modalAnamnesisPessoais').value = anamnesis.dadosPessoais || '';
+  document.getElementById('clienteModal').style.display = 'flex';
+}
+
+function fecharModalCliente() {
+  _clienteEditIndex = null;
+  document.getElementById('clienteModal').style.display = 'none';
+}
+
+function salvarEdicaoCliente() {
+  if (_clienteEditIndex === null) return;
+  const novoNome = document.getElementById('modalNome').value.trim();
+  const novaIdade = document.getElementById('modalIdade').value.trim();
+  const novaAlergia = document.getElementById('modalAlergia').value.trim();
+  const novaAnamnesis = {
+    queixaPrincipal: document.getElementById('modalAnamnesisQueixa').value.trim(),
+    historicoDoenca: document.getElementById('modalAnamnesisDoenca').value.trim(),
+    historicoMedico: document.getElementById('modalAnamnesisMedico').value.trim(),
+    medicamentos: document.getElementById('modalAnamnesisMedicamentos').value.trim(),
+    habitosVida: document.getElementById('modalAnamnesisHabitos').value.trim(),
+    antecedentesFamiliares: document.getElementById('modalAnamnesisFamiliares').value.trim(),
+    dadosPessoais: document.getElementById('modalAnamnesisPessoais').value.trim()
+  };
+  const fotoInput = document.getElementById('modalFoto');
+  if (!novoNome) { alert('Nome é obrigatório'); return; }
+
+  const nomeAntigo = window.clientes[_clienteEditIndex].nome;
+  const id = window.clientes[_clienteEditIndex].id;
+
+  const applyChanges = (fotoData) => {
+    const updated = { id, nome: novoNome, idade: novaIdade, alergia: novaAlergia, anamnesis: novaAnamnesis };
+    if (fotoData) updated.foto = fotoData;
+    else if (window.clientes[_clienteEditIndex].foto) updated.foto = window.clientes[_clienteEditIndex].foto;
+
+    window.clientes[_clienteEditIndex] = updated;
+
+    // atualizar agendamentos que usavam o id
+    for (let i = 0; i < window.agenda.length; i++) {
+      if (window.agenda[i].clientId === id) window.agenda[i].clienteName = novoNome;
+    }
+
+    // atualizar histórico que usavam o id
+    for (let i = 0; i < window.atendimentosConcluidos.length; i++) {
+      if (window.atendimentosConcluidos[i].clienteId === id) window.atendimentosConcluidos[i].clienteNome = novoNome;
+    }
+
+    renderClientes();
+    renderAgenda();
+    renderSessoes();
+    fecharModalCliente();
+    saveState();
+  };
+
+  const file = fotoInput && fotoInput.files && fotoInput.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) { applyChanges(e.target.result); };
+    reader.readAsDataURL(file);
+  } else {
+    applyChanges(null);
+  }
+}
+
+function removerCliente(index) {
+  const cliente = clientes[index];
+  if (!cliente) return;
+  if (!confirm(`Remover cliente ${cliente.nome}? Isso também removerá agendamentos relacionados.`)) return;
+
+  // remover cliente
+  const id = cliente.id;
+  window.clientes.splice(index, 1);
+
+  // remover agendamentos relacionados (por clientId)
+  for (let i = window.agenda.length - 1; i >= 0; i--) {
+    if (window.agenda[i].clientId === id) window.agenda.splice(i, 1);
+  }
+
+  // remover histórico relacionado
+  for (let i = window.atendimentosConcluidos.length - 1; i >= 0; i--) {
+    if (window.atendimentosConcluidos[i].clienteId === id) window.atendimentosConcluidos.splice(i, 1);
+  }
+
+  renderClientes();
+  renderAgenda();
+  saveState();
+}
+
+function exportarClientes() {
+  const formato = prompt('Escolha o formato de exportação:\n1 - JSON (completo)\n2 - CSV (dados básicos)\n3 - TXT (relatório simples)\n4 - PDF (relatório profissional)\n\nDigite o número da opção:');
+
+  if (!formato) return;
+
+  const dataAtual = new Date().toISOString().split('T')[0];
+  const nomeArquivo = `clientes_${dataAtual}`;
+
+  switch (formato) {
+    case '1':
+      exportarJSON(nomeArquivo);
+      break;
+    case '2':
+      exportarCSV(nomeArquivo);
+      break;
+    case '3':
+      exportarTXT(nomeArquivo);
+      break;
+    case '4':
+      exportarPDF(nomeArquivo);
+      break;
+    default:
+      alert('Opção inválida!');
+  }
+}
+
+function exportarJSON(nomeArquivo) {
+  const dados = {
+    clientes: window.clientes,
+    agenda: window.agenda,
+    atendimentosConcluidos: window.atendimentosConcluidos,
+    despesas: window.despesas || [],
+    exportadoEm: new Date().toISOString(),
+    versao: '1.0'
+  };
+
+  const json = JSON.stringify(dados, null, 2);
+  downloadArquivo(json, `${nomeArquivo}.json`, 'application/json');
+}
+
+function exportarCSV(nomeArquivo) {
+  if (window.clientes.length === 0) {
+    alert('Não há clientes para exportar!');
+    return;
+  }
+
+  const headers = [
+    'Nome',
+    'Idade',
+    'Alergias',
+    'Data Nascimento',
+    'Sexo',
+    'CPF',
+    'Telefone',
+    'Email',
+    'Endereço',
+    'Queixa Principal',
+    'Resultado Esperado',
+    'Percentual Gordura (%)',
+    'Massa Magra (kg)',
+    'Agua Corporal (%)',
+    'Gordura Visceral',
+    'TMB (kcal/dia)',
+    'Idade Metabolica'
+  ];
+
+  const linhas = [headers.join(';')];
+
+  window.clientes.forEach(cliente => {
+    const anamnesis = cliente.anamnesis || {};
+    const dadosPessoais = anamnesis.dadosPessoais || {};
+    const queixaPrincipal = anamnesis.queixaPrincipal || {};
+    const avaliacaoFisica = anamnesis.avaliacaoFisica || {};
+
+    const linha = [
+      cliente.nome || '',
+      cliente.idade || '',
+      cliente.alergia || '',
+      dadosPessoais.dataNascimento || '',
+      dadosPessoais.sexo || '',
+      dadosPessoais.cpf || '',
+      dadosPessoais.telefone || '',
+      dadosPessoais.email || '',
+      dadosPessoais.endereco || '',
+      queixaPrincipal.motivo || '',
+      queixaPrincipal.resultadoEsperado || '',
+      avaliacaoFisica.percentualGordura || '',
+      avaliacaoFisica.massaMagra || '',
+      avaliacaoFisica.aguaCorporal || '',
+      avaliacaoFisica.gorduraVisceral || '',
+      avaliacaoFisica.tmb || '',
+      avaliacaoFisica.idadeMetabolica || ''
+    ];
+
+    linhas.push(linha.map(campo => `"${campo}"`).join(';'));
+  });
+
+  const csv = linhas.join('\n');
+  downloadArquivo(csv, `${nomeArquivo}.csv`, 'text/csv');
+}
+
+function exportarTXT(nomeArquivo) {
+  let conteudo = `RELATÓRIO DE CLIENTES - ${new Date().toLocaleDateString('pt-BR')}\n`;
+  conteudo += '='.repeat(60) + '\n\n';
+
+  if (window.clientes.length === 0) {
+    conteudo += 'Nenhum cliente cadastrado.\n';
+  } else {
+    conteudo += `Total de clientes: ${window.clientes.length}\n\n`;
+
+    window.clientes.forEach((cliente, index) => {
+      conteudo += `${index + 1}. ${cliente.nome}\n`;
+      if (cliente.idade) conteudo += `   Idade: ${cliente.idade} anos\n`;
+      if (cliente.alergia) conteudo += `   Alergias: ${cliente.alergia}\n`;
+
+      const anamnesis = cliente.anamnesis;
+      if (anamnesis) {
+        const dadosPessoais = anamnesis.dadosPessoais;
+        if (dadosPessoais) {
+          if (dadosPessoais.telefone) conteudo += `   Telefone: ${dadosPessoais.telefone}\n`;
+          if (dadosPessoais.email) conteudo += `   E-mail: ${dadosPessoais.email}\n`;
+        }
+
+        const queixaPrincipal = anamnesis.queixaPrincipal;
+        if (queixaPrincipal && queixaPrincipal.motivo) {
+          conteudo += `   Queixa Principal: ${queixaPrincipal.motivo}\n`;
+        }
+
+        const avaliacaoFisica = anamnesis.avaliacaoFisica;
+        if (avaliacaoFisica) {
+          conteudo += `   Avaliação Física:\n`;
+          if (avaliacaoFisica.percentualGordura) conteudo += `     - Gordura Corporal: ${avaliacaoFisica.percentualGordura}%\n`;
+          if (avaliacaoFisica.massaMagra) conteudo += `     - Massa Magra: ${avaliacaoFisica.massaMagra}kg\n`;
+          if (avaliacaoFisica.tmb) conteudo += `     - TMB: ${avaliacaoFisica.tmb} kcal/dia\n`;
+        }
+      }
+
+      conteudo += '\n';
+    });
+  }
+
+  downloadArquivo(conteudo, `${nomeArquivo}.txt`, 'text/plain');
+}
+
+function exportarPDF(nomeArquivo) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Configurações iniciais
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  let yPosition = 20;
+
+  // Função para adicionar cabeçalho em todas as páginas
+  function adicionarCabecalho() {
+    // Linha superior
+    doc.setLineWidth(0.5);
+    doc.line(20, 15, pageWidth - 20, 15);
+
+    // Nome da clínica
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CLÍNICA DE ESTÉTICA BELLA VITA', pageWidth / 2, 25, { align: 'center' });
+
+    // Informações da clínica
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Rua das Flores, 123 - Centro - São Paulo/SP - CEP: 01234-567', pageWidth / 2, 32, { align: 'center' });
+    doc.text('Telefone: (11) 99999-8888 | E-mail: contato@clinicabellavita.com.br', pageWidth / 2, 37, { align: 'center' });
+    doc.text('CNPJ: 12.345.678/0001-90 | Responsável Técnico: Dra. Maria Silva - CREA: 123456/SP', pageWidth / 2, 42, { align: 'center' });
+
+    // Linha inferior do cabeçalho
+    doc.line(20, 48, pageWidth - 20, 48);
+
+    return 55; // Retorna a posição Y após o cabeçalho
+  }
+
+  // Adicionar cabeçalho na primeira página
+  yPosition = adicionarCabecalho();
+
+  // Título do relatório
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('RELATÓRIO DE CLIENTES', pageWidth / 2, yPosition, { align: 'center' });
+  yPosition += 12;
+
+  // Data de geração
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, pageWidth / 2, yPosition, { align: 'center' });
+  yPosition += 15;
+
+  if (window.clientes.length === 0) {
+    doc.setFontSize(12);
+    doc.text('Nenhum cliente cadastrado.', 20, yPosition);
+  } else {
+    doc.setFontSize(12);
+    doc.text(`Total de clientes: ${window.clientes.length}`, 20, yPosition);
+    yPosition += 15;
+
+    window.clientes.forEach((cliente, index) => {
+      // Verificar se precisa de nova página
+      if (yPosition > pageHeight - 50) {
+        doc.addPage();
+        yPosition = adicionarCabecalho();
+      }
+
+      // Nome do cliente
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text(`${index + 1}. ${cliente.nome}`, 20, yPosition);
+      yPosition += 10;
+
+      // Informações básicas
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+
+      if (cliente.idade) {
+        doc.text(`Idade: ${cliente.idade} anos`, 30, yPosition);
+        yPosition += 6;
+      }
+
+      if (cliente.alergia) {
+        doc.text(`Alergias: ${cliente.alergia}`, 30, yPosition);
+        yPosition += 6;
+      }
+
+      const anamnesis = cliente.anamnesis;
+      if (anamnesis) {
+        const dadosPessoais = anamnesis.dadosPessoais;
+        if (dadosPessoais) {
+          if (dadosPessoais.telefone) {
+            doc.text(`Telefone: ${dadosPessoais.telefone}`, 30, yPosition);
+            yPosition += 6;
+          }
+          if (dadosPessoais.email) {
+            doc.text(`E-mail: ${dadosPessoais.email}`, 30, yPosition);
+            yPosition += 6;
+          }
+        }
+
+        const queixaPrincipal = anamnesis.queixaPrincipal;
+        if (queixaPrincipal && queixaPrincipal.motivo) {
+          doc.text(`Queixa Principal: ${queixaPrincipal.motivo}`, 30, yPosition);
+          yPosition += 6;
+        }
+
+        const avaliacaoFisica = anamnesis.avaliacaoFisica;
+        if (avaliacaoFisica) {
+          doc.setFont('helvetica', 'bold');
+          doc.text('Avaliação Física:', 30, yPosition);
+          yPosition += 6;
+          doc.setFont('helvetica', 'normal');
+
+          if (avaliacaoFisica.percentualGordura) {
+            doc.text(`• Gordura Corporal: ${avaliacaoFisica.percentualGordura}%`, 40, yPosition);
+            yPosition += 5;
+          }
+          if (avaliacaoFisica.massaMagra) {
+            doc.text(`• Massa Magra: ${avaliacaoFisica.massaMagra}kg`, 40, yPosition);
+            yPosition += 5;
+          }
+          if (avaliacaoFisica.tmb) {
+            doc.text(`• TMB: ${avaliacaoFisica.tmb} kcal/dia`, 40, yPosition);
+            yPosition += 5;
+          }
+        }
+      }
+
+      yPosition += 10; // Espaço entre clientes
+    });
+  }
+
+  // Adicionar rodapé em todas as páginas
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+
+    // Linha do rodapé
+    doc.setLineWidth(0.3);
+    doc.line(20, pageHeight - 25, pageWidth - 20, pageHeight - 25);
+
+    // Informações do rodapé
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Clínica de Estética Bella Vita - Documento confidencial para uso profissional', pageWidth / 2, pageHeight - 18, { align: 'center' });
+    doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - 12, { align: 'center' });
+    doc.text('Sistema de Gestão Estética - www.clinicabellavita.com.br', pageWidth / 2, pageHeight - 6, { align: 'center' });
+  }
+
+  // Salvar o PDF
+  doc.save(`${nomeArquivo}.pdf`);
+}
+
+function downloadArquivo(conteudo, nomeArquivo, tipoMime) {
+  const blob = new Blob([conteudo], { type: tipoMime });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nomeArquivo;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}
+
+// ====== MODAL SESSÃO ======
+function abrirModalSessao(atendimento) {
+  const detalhes = document.getElementById('sessaoDetalhes');
+  detalhes.innerHTML = `
+    <p><strong>Cliente:</strong> ${atendimento.clienteNome}</p>
+    <p><strong>Procedimento:</strong> ${atendimento.procedimento}</p>
+    <p><strong>Data/Hora:</strong> ${atendimento.data} ${atendimento.hora}</p>
+    <p><strong>Valor:</strong> R$ ${atendimento.valor.toFixed(2)}</p>
+    <p><strong>Data de Conclusão:</strong> ${new Date(atendimento.dataConclusao).toLocaleString('pt-BR')}</p>
+  `;
+  document.getElementById('sessaoModal').style.display = 'flex';
+}
+
+function fecharModalSessao() {
+  document.getElementById('sessaoModal').style.display = 'none';
+}
+
+// ====== MODAL FLUXO ======
+function verDetalhesFluxo(data, descricao, categoria, entrada, saida, tipo) {
+  const movimentacao = { data, descricao, categoria, entrada, saida, tipo };
+  abrirModalFluxo(movimentacao);
+}
+
+function abrirModalFluxo(movimentacao) {
+  const detalhes = document.getElementById('fluxoDetalhes');
+  detalhes.innerHTML = `
+    <p><strong>Tipo:</strong> ${movimentacao.tipo === 'entrada' ? 'Entrada' : 'Saída'}</p>
+    <p><strong>Data:</strong> ${new Date(movimentacao.data).toLocaleDateString('pt-BR')}</p>
+    <p><strong>Descrição:</strong> ${movimentacao.descricao}</p>
+    <p><strong>Categoria:</strong> ${movimentacao.categoria}</p>
+    ${movimentacao.entrada > 0 ? `<p><strong>Valor de Entrada:</strong> R$ ${movimentacao.entrada.toFixed(2)}</p>` : ''}
+    ${movimentacao.saida > 0 ? `<p><strong>Valor de Saída:</strong> R$ ${movimentacao.saida.toFixed(2)}</p>` : ''}
+  `;
+  document.getElementById('fluxoModal').style.display = 'flex';
+}
+
+function fecharModalFluxo() {
+  document.getElementById('fluxoModal').style.display = 'none';
+}
+
+// ====== AGENDA ======
+function adicionarAgenda() {
+  if (window.AgendaModule && typeof window.AgendaModule.add === 'function') {
+    return window.AgendaModule.add();
+  }
+}
+
+function renderAgenda() {
+  if (window.AgendaModule && typeof window.AgendaModule.render === 'function') {
+    return window.AgendaModule.render();
+  }
+}
+
+function removerAgenda(id) {
+  if (window.AgendaModule && typeof window.AgendaModule.remove === 'function') {
+    return window.AgendaModule.remove(id);
+  }
+}
+
+function filtrarAgenda() {
+  const status = document.getElementById('filtroStatus').value;
+  const data = document.getElementById('filtroData').value;
+  if (window.AgendaModule && typeof window.AgendaModule.filtrar === 'function') {
+    return window.AgendaModule.filtrar(status, data);
+  }
+}
+
+function limparFiltros() {
+  document.getElementById('filtroStatus').value = '';
+  document.getElementById('filtroData').value = '';
+  if (window.AgendaModule && typeof window.AgendaModule.filtrar === 'function') {
+    return window.AgendaModule.filtrar('', '');
+  }
+}
+
+function renderSessoes() {
+  if (window.SessionsModule && typeof window.SessionsModule.render === 'function') {
+    return window.SessionsModule.render();
+  }
+}
+
+function renderHistoricoSessoes() {
+  if (window.SessionsModule && typeof window.SessionsModule.renderHistory === 'function') {
+    return window.SessionsModule.renderHistory('', '', '', '', true);
+  }
+}
+
+  // carregar estado inicial e renderizar
+  loadState();
+  renderClientes();
+  renderAgenda();
+  renderSessoes();
+  renderFluxo();
+
+// ====== FLUXO DE CAIXA ======
+function adicionarDespesa() {
+  const descricao = document.getElementById('despesaDescricao').value.trim();
+  const valor = parseFloat(document.getElementById('despesaValor').value);
+  const data = document.getElementById('despesaData').value;
+  const categoria = document.getElementById('despesaCategoria').value;
+
+  if (!descricao || !valor || !data || !categoria) {
+    alert('Preencha todos os campos da despesa!');
+    return;
+  }
+
+  window.despesas.push({
+    id: generateId(),
+    descricao,
+    valor,
+    data,
+    categoria,
+    tipo: 'saida'
+  });
+
+  document.getElementById('despesaDescricao').value = '';
+  document.getElementById('despesaValor').value = '';
+  document.getElementById('despesaData').value = '';
+  document.getElementById('despesaCategoria').value = '';
+
+  saveState();
+  renderFluxo();
+}
+
+function removerDespesa(id) {
+  const index = window.despesas.findIndex(d => d.id === id);
+  if (index !== -1) {
+    window.despesas.splice(index, 1);
+    saveState();
+    renderFluxo();
+  }
+}
+
+function renderFluxo(filtroBusca = '', filtroTipo = '', filtroCategoria = '', filtroDataInicio = '', filtroDataFim = '', sortBy = '', sortAsc = true) {
+  const tbody = document.getElementById('corpoTabelaFluxo');
+  tbody.innerHTML = '';
+
+  // Combinar entradas e saídas
+  const movimentacoes = [];
+
+  // Adicionar entradas (atendimentos)
+  window.atendimentosConcluidos.forEach(a => {
+    movimentacoes.push({
+      data: a.data || a.mes + '-01', // usar mês se não tiver data específica
+      descricao: `Atendimento - ${a.clienteNome || 'Cliente'}`,
+      categoria: 'Receita',
+      entrada: a.valor,
+      saida: 0,
+      tipo: 'entrada'
+    });
+  });
+
+  // Adicionar saídas (despesas)
+  window.despesas.forEach(d => {
+    movimentacoes.push({
+      id: d.id,
+      data: d.data,
+      descricao: d.descricao,
+      categoria: d.categoria,
+      entrada: 0,
+      saida: d.valor,
+      tipo: 'saida'
+    });
+  });
+
+  // Aplicar filtros
+  let filteredMov = movimentacoes.filter(mov => {
+    if (filtroBusca && !mov.descricao.toLowerCase().includes(filtroBusca.toLowerCase())) return false;
+    if (filtroTipo && mov.tipo !== filtroTipo) return false;
+    if (filtroCategoria && mov.categoria !== filtroCategoria) return false;
+    if (filtroDataInicio && new Date(mov.data) < new Date(filtroDataInicio)) return false;
+    if (filtroDataFim && new Date(mov.data) > new Date(filtroDataFim)) return false;
+    return true;
+  });
+
+  // Aplicar ordenação
+  if (sortBy) {
+    filteredMov.sort((a, b) => {
+      let valA, valB;
+      switch (sortBy) {
+        case 'data':
+          valA = new Date(a.data);
+          valB = new Date(b.data);
+          break;
+        case 'descricao':
+          valA = a.descricao.toLowerCase();
+          valB = b.descricao.toLowerCase();
+          break;
+        case 'categoria':
+          valA = a.categoria.toLowerCase();
+          valB = b.categoria.toLowerCase();
+          break;
+        default:
+          return 0;
+      }
+      if (valA < valB) return sortAsc ? -1 : 1;
+      if (valA > valB) return sortAsc ? 1 : -1;
+      return 0;
+    });
+  } else {
+    // Ordenação padrão por data
+    filteredMov.sort((a, b) => new Date(a.data) - new Date(b.data));
+  }
+
+  let saldo = 0;
+
+  filteredMov.forEach(mov => {
+    saldo += mov.entrada - mov.saida;
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${new Date(mov.data).toLocaleDateString('pt-BR')}</td>
+      <td>${mov.descricao}</td>
+      <td>${mov.categoria}</td>
+      <td class="entrada">${mov.entrada > 0 ? 'R$ ' + mov.entrada.toFixed(2) : ''}</td>
+      <td class="saida">${mov.saida > 0 ? 'R$ ' + mov.saida.toFixed(2) : ''}</td>
+      <td class="saldo ${saldo >= 0 ? 'positivo' : 'negativo'}">R$ ${saldo.toFixed(2)}</td>
+      <td>
+        <button class="btn secondary small" onclick="verDetalhesFluxo('${mov.data}', '${mov.descricao}', '${mov.categoria}', ${mov.entrada}, ${mov.saida}, '${mov.tipo}')"><i class="fas fa-eye"></i> Ver</button>
+        ${mov.tipo === 'saida' ? '<button class="btn secondary small" onclick="removerDespesa(\'' + mov.id + '\')"><i class="fas fa-trash"></i></button>' : ''}
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Calcular totais dos itens filtrados
+  const totalEntradas = filteredMov.filter(m => m.tipo === 'entrada').reduce((sum, m) => sum + m.entrada, 0);
+  const totalSaidas = filteredMov.filter(m => m.tipo === 'saida').reduce((sum, m) => sum + m.saida, 0);
+  const saldoAtual = totalEntradas - totalSaidas;
+
+  document.getElementById('totalEntradas').innerText = 'R$ ' + totalEntradas.toFixed(2);
+  document.getElementById('totalSaidas').innerText = 'R$ ' + totalSaidas.toFixed(2);
+  document.getElementById('saldoAtual').innerText = 'R$ ' + saldoAtual.toFixed(2);
+  document.getElementById('saldoAtual').className = saldoAtual >= 0 ? 'positivo' : 'negativo';
+}
+
+// ====== RELATÓRIO ======
+function filtrarRelatorioAtendimentos() {
+    const mes = document.getElementById('mesFiltroAtendimentos').value;
+    const lista = document.getElementById('listaRelatorioAtendimentos');
+    const totalTxt = document.getElementById('totalRelatorioAtendimentos');
+    const canvas = document.getElementById('graficoAtendimentos');
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    lista.innerHTML = '';
+
+    let total = 0;
+    const valores = [];
+
+    window.atendimentosConcluidos
+      .filter(a => !mes || a.mes === mes)
+      .forEach((a, i) => {
+        total += a.valor;
+        valores.push(a.valor);
+        const li = document.createElement('li');
+        const clienteNome = a.clienteNome || (window.clientes.find(c=>c.id===a.clienteId)||{}).nome || a.clienteId || '—';
+        li.innerText = `${clienteNome} - R$ ${a.valor.toFixed(2)}`;
+        lista.appendChild(li);
+      });
+
+    totalTxt.innerText = total ? `Total do mês: R$ ${total.toFixed(2)}` : '';
+
+    if (valores.length > 0) {
+      const max = Math.max(...valores);
+      const barWidth = 40;
+      const gap = 20;
+
+      valores.forEach((v, i) => {
+        const h = (v / max) * 200;
+        const x = 50 + i * (barWidth + gap);
+        ctx.fillStyle = '#C98895';
+        ctx.fillRect(x, 250 - h, barWidth, h);
+        ctx.fillStyle = '#000';
+        ctx.fillText(`R$ ${v.toFixed(2)}`, x, 270);
+      });
+    }
+  }
+
+function filtrarRelatorioClientes() {
+    const periodo = document.getElementById('periodoClientes').value;
+    const mes = document.getElementById('mesFiltroClientes').value;
+    const lista = document.getElementById('listaRelatorioClientes');
+    const totalTxt = document.getElementById('totalRelatorioClientes');
+    const canvas = document.getElementById('graficoClientes');
+    const mesContainer = document.getElementById('mesContainerClientes');
+
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    lista.innerHTML = '';
+
+    let clientesFiltrados = window.clientes || [];
+
+    if (periodo === 'mensal') {
+      mesContainer.style.display = 'block';
+      if (mes) {
+        const anoAtual = new Date().getFullYear();
+        clientesFiltrados = clientesFiltrados.filter(c => {
+          if (!c.createdAt) return false;
+          const data = new Date(c.createdAt);
+          return data.getMonth() + 1 === parseInt(mes) && data.getFullYear() === anoAtual;
+        });
+      }
+    } else if (periodo === 'semanal') {
+      mesContainer.style.display = 'none';
+      const hoje = new Date();
+      const semanaAtras = new Date(hoje.getTime() - 7 * 24 * 60 * 60 * 1000);
+      clientesFiltrados = clientesFiltrados.filter(c => {
+        if (!c.createdAt) return false;
+        const data = new Date(c.createdAt);
+        return data >= semanaAtras;
+      });
+    }
+
+    clientesFiltrados.forEach(c => {
+      const li = document.createElement('li');
+      li.innerText = `${c.nome} - Cadastrado em ${new Date(c.createdAt).toLocaleDateString('pt-BR')}`;
+      lista.appendChild(li);
+    });
+
+    totalTxt.innerText = periodo === 'mensal' ? `Total de novos clientes no mês: ${clientesFiltrados.length}` : `Total de novos clientes na semana: ${clientesFiltrados.length}`;
+
+    // Gráfico
+    if (clientesFiltrados.length > 0) {
+      const dias = {};
+      clientesFiltrados.forEach(c => {
+        const data = new Date(c.createdAt);
+        const key = periodo === 'mensal' ? data.getDate() : data.toLocaleDateString('pt-BR', { weekday: 'short' });
+        dias[key] = (dias[key] || 0) + 1;
+      });
+      const max = Math.max(...Object.values(dias));
+      const barWidth = periodo === 'mensal' ? 10 : 30;
+      const gap = periodo === 'mensal' ? 5 : 10;
+      let i = 0;
+      for (const key in dias) {
+        const h = (dias[key] / max) * 200;
+        const x = 50 + i * (barWidth + gap);
+        ctx.fillStyle = '#C98895';
+        ctx.fillRect(x, 250 - h, barWidth, h);
+        ctx.fillStyle = '#000';
+        ctx.fillText(key, x, 270);
+        i++;
+      }
+    }
+  }
+
+  // Funções da agenda
+  function filtrarAgenda() {
+    const status = document.getElementById('filtroStatus').value;
+    const data = document.getElementById('filtroData').value;
+    if (window.AgendaModule && typeof window.AgendaModule.filtrar === 'function') {
+      window.AgendaModule.filtrar(status, data);
+    }
+  }
+
+  function limparFiltros() {
+    document.getElementById('filtroStatus').value = '';
+    document.getElementById('filtroData').value = '';
+    if (window.AgendaModule && typeof window.AgendaModule.filtrar === 'function') {
+      window.AgendaModule.filtrar('', '');
+    }
+  }
+
+  function mudarSemana(direcao) {
+    if (window.AgendaModule && typeof window.AgendaModule.mudarSemana === 'function') {
+      window.AgendaModule.mudarSemana(direcao);
+    }
+  }
+</script>
+
+<script>
+// ====== FUNÇÕES DE FILTRO DO HISTÓRICO ======
+function filtrarHistorico() {
+  const busca = document.getElementById('historicoBusca').value;
+  const mes = document.getElementById('historicoMes').value;
+  const data = document.getElementById('historicoData').value;
+  
+  if (window.SessionsModule && typeof window.SessionsModule.renderHistory === 'function') {
+    window.SessionsModule.renderHistory(busca, mes, data, _historicoSortBy, _historicoSortAsc);
+  }
+}
+
+function limparFiltrosHistorico() {
+  document.getElementById('historicoBusca').value = '';
+  document.getElementById('historicoMes').value = '';
+  document.getElementById('historicoData').value = '';
+  filtrarHistorico();
+}
+
+let _historicoSortBy = '';
+let _historicoSortAsc = true;
+
+function ordenarHistorico(campo) {
+  if (_historicoSortBy === campo) {
+    _historicoSortAsc = !_historicoSortAsc;
+  } else {
+    _historicoSortBy = campo;
+    _historicoSortAsc = true;
+  }
+  filtrarHistorico();
+}
+
+// ====== FUNÇÕES DE FILTRO E ORDENAÇÃO DO FLUXO ======
+function filtrarFluxo() {
+  const busca = document.getElementById('fluxoBusca').value;
+  const tipo = document.getElementById('fluxoTipo').value;
+  const categoria = document.getElementById('fluxoCategoria').value;
+  const dataInicio = document.getElementById('fluxoDataInicio').value;
+  const dataFim = document.getElementById('fluxoDataFim').value;
+  
+  renderFluxo(busca, tipo, categoria, dataInicio, dataFim, _fluxoSortBy, _fluxoSortAsc);
+}
+
+function limparFiltrosFluxo() {
+  document.getElementById('fluxoBusca').value = '';
+  document.getElementById('fluxoTipo').value = '';
+  document.getElementById('fluxoCategoria').value = '';
+  document.getElementById('fluxoDataInicio').value = '';
+  document.getElementById('fluxoDataFim').value = '';
+  _fluxoSortBy = '';
+  _fluxoSortAsc = true;
+  filtrarFluxo();
+}
+
+let _fluxoSortBy = '';
+let _fluxoSortAsc = true;
+
+function ordenarFluxo(campo) {
+  if (_fluxoSortBy === campo) {
+    _fluxoSortAsc = !_fluxoSortAsc;
+  } else {
+    _fluxoSortBy = campo;
+    _fluxoSortAsc = true;
+  }
+  filtrarFluxo();
+}
+
+// Funções de exportação para PDF
+function exportarFluxoPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  doc.setFontSize(18);
+  doc.text('Fluxo de Caixa', 20, 20);
+  
+  let y = 40;
+  doc.setFontSize(12);
+  
+  // Cabeçalhos
+  doc.text('Data', 20, y);
+  doc.text('Descrição', 50, y);
+  doc.text('Categoria', 120, y);
+  doc.text('Entrada', 160, y);
+  doc.text('Saída', 180, y);
+  doc.text('Saldo', 200, y);
+  
+  y += 10;
+  
+  // Dados da tabela
+  const rows = document.querySelectorAll('#corpoTabelaFluxo tr');
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+    if (cells.length >= 6) {
+      doc.text(cells[0].textContent, 20, y);
+      doc.text(cells[1].textContent.substring(0, 30), 50, y); // Limitar descrição
+      doc.text(cells[2].textContent, 120, y);
+      doc.text(cells[3].textContent, 160, y);
+      doc.text(cells[4].textContent, 180, y);
+      doc.text(cells[5].textContent, 200, y);
+      y += 10;
+      if (y > 270) {
+        doc.addPage();
+        y = 20;
+      }
+    }
+  });
+  
+  doc.save('fluxo_de_caixa.pdf');
+}
+
+function exportarRelatoriosPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  
+  doc.setFontSize(18);
+  doc.text('Relatórios', 20, 20);
+  
+  let y = 40;
+  doc.setFontSize(12);
+  
+  // Relatório de Atendimentos
+  doc.setFontSize(14);
+  doc.text('Relatório de Atendimentos', 20, y);
+  y += 10;
+  doc.setFontSize(12);
+  
+  const atendimentos = document.querySelectorAll('#listaRelatorioAtendimentos li');
+  atendimentos.forEach(item => {
+    doc.text(item.textContent, 20, y);
+    y += 10;
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+  });
+  
+  const totalAtendimentos = document.getElementById('totalRelatorioAtendimentos').textContent;
+  doc.text(totalAtendimentos, 20, y);
+  y += 20;
+  
+  // Relatório de Clientes
+  doc.setFontSize(14);
+  doc.text('Relatório de Clientes', 20, y);
+  y += 10;
+  doc.setFontSize(12);
+  
+  const clientes = document.querySelectorAll('#listaRelatorioClientes li');
+  clientes.forEach(item => {
+    doc.text(item.textContent, 20, y);
+    y += 10;
+    if (y > 270) {
+      doc.addPage();
+      y = 20;
+    }
+  });
+  
+  const totalClientes = document.getElementById('totalRelatorioClientes').textContent;
+  doc.text(totalClientes, 20, y);
+  
+  doc.save('relatorios.pdf');
+}
+</script>
+
+<script src="agenda.js"></script>
+<script src="sessions.js"></script>
+<script src="dashboard.js"></script>
+
+</body>
+</html>

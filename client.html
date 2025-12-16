@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <title>Cliente — Detalhes</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    .detail{max-width:900px;margin:24px auto;padding:18px;background:#fff;border-radius:12px}
+    .detail img{width:160px;height:160px;object-fit:cover;border-radius:12px}
+    .meta{display:flex;gap:16px;align-items:center}
+    .list{margin-top:14px}
+    .btn{background:#4fa89a;color:#fff;padding:8px 12px;border-radius:8px;border:none}
+    .small{color:#6b7280}
+  </style>
+</head>
+<body>
+  <main>
+    <a href="index.html" class="back-link"><i class="fas fa-arrow-left"></i> Voltar</a>
+    <div class="detail">
+      <div class="meta">
+        <img id="fotoClienteDetalhe" src="" alt="Foto do cliente" />
+        <div>
+          <h2 id="nomeDetalhe"></h2>
+          <div class="small" id="idadeDetalhe"></div>
+          <div class="small" id="alergiaDetalhe"></div>
+        </div>
+        <div style="margin-left: auto;">
+          <button class="btn" onclick="exportarClienteIndividual()">
+            <i class="fas fa-download"></i> Exportar Dados
+          </button>
+        </div>
+      </div>
+
+      <h3><i class="fas fa-calendar-check"></i> Próximos agendamentos</h3>
+      <ul id="detAgenda" class="list"></ul>
+
+      <h3><i class="fas fa-history"></i> Histórico de atendimentos</h3>
+      <ul id="detHistorico" class="list"></ul>
+
+      <h3><i class="fas fa-notes-medical"></i> Anamnese – Clínica de Estética</h3>
+      <div class="anamnesis-form">
+        <!-- 1. Dados Pessoais -->
+        <div class="anamnesis-section">
+          <h4>1. Dados Pessoais</h4>
+          <div class="form-grid">
+            <div class="anamnesis-field">
+              <label><strong>Nome completo:</strong></label>
+              <input id="nomeCliente" type="text" readonly />
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Data de nascimento:</strong></label>
+              <input id="dataNascimento" type="date" readonly />
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Idade:</strong></label>
+              <input id="idadeCliente" type="text" readonly />
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Sexo:</strong></label>
+              <input id="sexoCliente" type="text" readonly />
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>CPF:</strong></label>
+              <input id="cpfCliente" type="text" readonly />
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Telefone:</strong></label>
+              <input id="telefoneCliente" type="text" readonly />
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>E-mail:</strong></label>
+              <input id="emailCliente" type="email" readonly />
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Endereço:</strong></label>
+              <input id="enderecoCliente" type="text" readonly />
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. Queixa Principal -->
+        <div class="anamnesis-section">
+          <h4>2. Queixa Principal</h4>
+          <div class="anamnesis-field">
+            <label><strong>Motivo da consulta:</strong></label>
+            <textarea id="queixaPrincipal" rows="3"></textarea>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Resultado esperado:</strong></label>
+            <textarea id="resultadoEsperado" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- 3. Histórico de Saúde -->
+        <div class="anamnesis-section">
+          <h4>3. Histórico de Saúde</h4>
+          <p><strong>Marque SIM ou NÃO:</strong></p>
+          <div class="checkbox-grid">
+            <label><input type="checkbox" id="hipertensao"> Hipertensão</label>
+            <label><input type="checkbox" id="diabetes"> Diabetes</label>
+            <label><input type="checkbox" id="cardiacos"> Problemas cardíacos</label>
+            <label><input type="checkbox" id="renais"> Problemas renais</label>
+            <label><input type="checkbox" id="hepaticos"> Problemas hepáticos</label>
+            <label><input type="checkbox" id="hormonais"> Distúrbios hormonais</label>
+            <label><input type="checkbox" id="epilepsia"> Epilepsia</label>
+            <label><input type="checkbox" id="cancer"> Câncer</label>
+            <label><input type="checkbox" id="autoimunes"> Doenças autoimunes</label>
+            <label><input type="checkbox" id="circulatorios"> Problemas circulatórios</label>
+            <label><input type="checkbox" id="cicatrizacao"> Distúrbios de cicatrização</label>
+            <label><input type="checkbox" id="trombose"> Trombose</label>
+            <label><input type="checkbox" id="gestante"> Gestante</label>
+            <label><input type="checkbox" id="lactante"> Lactante</label>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Se sim, quais?</strong></label>
+            <textarea id="historicoSaudeDetalhes" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- 4. Uso de Medicamentos -->
+        <div class="anamnesis-section">
+          <h4>4. Uso de Medicamentos</h4>
+          <div class="radio-group">
+            <label><strong>Faz uso contínuo de medicamentos?</strong></label>
+            <label><input type="radio" name="medicamentos" value="sim"> Sim</label>
+            <label><input type="radio" name="medicamentos" value="nao"> Não</label>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Quais?</strong></label>
+            <textarea id="medicamentosQuais" rows="2"></textarea>
+          </div>
+          
+          <div class="radio-group">
+            <label><strong>Uso de anticoncepcional?</strong></label>
+            <label><input type="radio" name="anticoncepcional" value="sim"> Sim</label>
+            <label><input type="radio" name="anticoncepcional" value="nao"> Não</label>
+          </div>
+          
+          <div class="radio-group">
+            <label><strong>Uso de anticoagulantes?</strong></label>
+            <label><input type="radio" name="anticoagulantes" value="sim"> Sim</label>
+            <label><input type="radio" name="anticoagulantes" value="nao"> Não</label>
+          </div>
+          
+          <div class="radio-group">
+            <label><strong>Uso de corticoides?</strong></label>
+            <label><input type="radio" name="corticoides" value="sim"> Sim</label>
+            <label><input type="radio" name="corticoides" value="nao"> Não</label>
+          </div>
+        </div>
+
+        <!-- 5. Alergias -->
+        <div class="anamnesis-section">
+          <h4>5. Alergias</h4>
+          <div class="radio-group">
+            <label><strong>Possui alergia a medicamentos, cosméticos, alimentos ou substâncias?</strong></label>
+            <label><input type="radio" name="alergias" value="sim"> Sim</label>
+            <label><input type="radio" name="alergias" value="nao"> Não</label>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Quais?</strong></label>
+            <textarea id="alergiasQuais" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- 6. Hábitos de Vida -->
+        <div class="anamnesis-section">
+          <h4>6. Hábitos de Vida</h4>
+          <div class="radio-group">
+            <label><strong>Pratica atividade física?</strong></label>
+            <label><input type="radio" name="atividadeFisica" value="sim"> Sim</label>
+            <label><input type="radio" name="atividadeFisica" value="nao"> Não</label>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Frequência:</strong></label>
+            <input id="atividadeFrequencia" type="text" />
+          </div>
+          
+          <div class="radio-group">
+            <label><strong>Fuma?</strong></label>
+            <label><input type="radio" name="fuma" value="sim"> Sim</label>
+            <label><input type="radio" name="fuma" value="nao"> Não</label>
+          </div>
+          
+          <div class="radio-group">
+            <label><strong>Consome bebida alcoólica?</strong></label>
+            <label><input type="radio" name="alcool" value="sim"> Sim</label>
+            <label><input type="radio" name="alcool" value="nao"> Não</label>
+          </div>
+          
+          <div class="anamnesis-field">
+            <label><strong>Ingestão de água diária:</strong></label>
+            <input id="ingestaoAgua" type="text" />
+          </div>
+          
+          <div class="radio-group">
+            <label><strong>Alimentação balanceada?</strong></label>
+            <label><input type="radio" name="alimentacao" value="sim"> Sim</label>
+            <label><input type="radio" name="alimentacao" value="nao"> Não</label>
+          </div>
+        </div>
+
+        <!-- 7. Histórico Estético -->
+        <div class="anamnesis-section">
+          <h4>7. Histórico Estético</h4>
+          <div class="radio-group">
+            <label><strong>Já realizou procedimentos estéticos anteriormente?</strong></label>
+            <label><input type="radio" name="procedimentosAnteriores" value="sim"> Sim</label>
+            <label><input type="radio" name="procedimentosAnteriores" value="nao"> Não</label>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Quais?</strong></label>
+            <textarea id="procedimentosQuais" rows="2"></textarea>
+          </div>
+          
+          <div class="radio-group">
+            <label><strong>Já teve intercorrências ou reações adversas?</strong></label>
+            <label><input type="radio" name="intercorrencias" value="sim"> Sim</label>
+            <label><input type="radio" name="intercorrencias" value="nao"> Não</label>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Quais?</strong></label>
+            <textarea id="intercorrenciasQuais" rows="2"></textarea>
+          </div>
+        </div>
+
+        <!-- 8. Avaliação da Pele -->
+        <div class="anamnesis-section">
+          <h4>8. Avaliação da Pele (facial/corporal)</h4>
+          <div class="radio-group">
+            <label><strong>Tipo de pele:</strong></label>
+            <label><input type="radio" name="tipoPele" value="normal"> Normal</label>
+            <label><input type="radio" name="tipoPele" value="oleosa"> Oleosa</label>
+            <label><input type="radio" name="tipoPele" value="seca"> Seca</label>
+            <label><input type="radio" name="tipoPele" value="mista"> Mista</label>
+            <label><input type="radio" name="tipoPele" value="sensivel"> Sensível</label>
+          </div>
+          
+          <div class="radio-group">
+            <label><strong>Fototipo (Fitzpatrick):</strong></label>
+            <label><input type="radio" name="fototipo" value="I"> I</label>
+            <label><input type="radio" name="fototipo" value="II"> II</label>
+            <label><input type="radio" name="fototipo" value="III"> III</label>
+            <label><input type="radio" name="fototipo" value="IV"> IV</label>
+            <label><input type="radio" name="fototipo" value="V"> V</label>
+            <label><input type="radio" name="fototipo" value="VI"> VI</label>
+          </div>
+          
+          <p><strong>Presença de:</strong></p>
+          <div class="checkbox-grid">
+            <label><input type="checkbox" id="acne"> Acne</label>
+            <label><input type="checkbox" id="manchas"> Manchas</label>
+            <label><input type="checkbox" id="rugas"> Rugas</label>
+            <label><input type="checkbox" id="flacidez"> Flacidez</label>
+            <label><input type="checkbox" id="celulite"> Celulite</label>
+            <label><input type="checkbox" id="estrias"> Estrias</label>
+            <label><input type="checkbox" id="oleosidade"> Oleosidade excessiva</label>
+            <label><input type="checkbox" id="sensibilidade"> Sensibilidade</label>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Observações:</strong></label>
+            <textarea id="avaliacaoObservacoes" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- 9. Avaliação Física/Antropométrica -->
+        <div class="anamnesis-section">
+          <h4>9. Avaliação Física/Antropométrica</h4>
+          <div class="avaliacao-fisica-grid">
+            <div class="anamnesis-field">
+              <label><strong>Percentual de gordura corporal (%):</strong></label>
+              <input id="percentualGordura" type="number" step="0.1">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Massa magra (kg):</strong></label>
+              <input id="massaMagra" type="number" step="0.1">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Água corporal total (%):</strong></label>
+              <input id="aguaCorporal" type="number" step="0.1">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Gordura visceral:</strong></label>
+              <input id="gorduraVisceral" type="number" step="0.1">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Taxa metabólica basal (TMB) - kcal/dia:</strong></label>
+              <input id="tmb" type="number" step="1">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Idade metabólica (anos):</strong></label>
+              <input id="idadeMetabolica" type="number" step="1">
+            </div>
+          </div>
+
+          <div class="distribuicao-corporal">
+            <h5>Distribuição Corporal (Segmentar)</h5>
+            <div class="avaliacao-fisica-grid">
+              <div class="anamnesis-field">
+                <label><strong>Braço direito (%):</strong></label>
+                <input id="bracoDireito" type="number" step="0.1">
+              </div>
+              <div class="anamnesis-field">
+                <label><strong>Braço esquerdo (%):</strong></label>
+                <input id="bracoEsquerdo" type="number" step="0.1">
+              </div>
+              <div class="anamnesis-field">
+                <label><strong>Perna direita (%):</strong></label>
+                <input id="pernaDireita" type="number" step="0.1">
+              </div>
+              <div class="anamnesis-field">
+                <label><strong>Perna esquerda (%):</strong></label>
+                <input id="pernaEsquerda" type="number" step="0.1">
+              </div>
+              <div class="anamnesis-field">
+                <label><strong>Tronco (%):</strong></label>
+                <input id="tronco" type="number" step="0.1">
+              </div>
+              <div class="anamnesis-field">
+                <label><strong>Quadril (%):</strong></label>
+                <input id="quadril" type="number" step="0.1">
+              </div>
+            </div>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Observações sobre a avaliação física:</strong></label>
+            <textarea id="avaliacaoFisicaObservacoes" rows="3"></textarea>
+          </div>
+        </div>
+
+        <!-- 10. Contraindicações -->
+        <div class="anamnesis-section">
+          <h4>9. Contraindicações</h4>
+          <div class="radio-group">
+            <label><strong>Possui alguma restrição para procedimentos estéticos?</strong></label>
+            <label><input type="radio" name="contraindicacoes" value="sim"> Sim</label>
+            <label><input type="radio" name="contraindicacoes" value="nao"> Não</label>
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Quais?</strong></label>
+            <textarea id="contraindicacoesQuais" rows="2"></textarea>
+          </div>
+        </div>
+      </div>
+      <button class="btn" onclick="salvarAnamnesis()"><i class="fas fa-save"></i> Salvar Anamnese</button>
+    </div>
+  </main>
+
+<script>
+  function qs(param){
+    const url = new URL(location.href);
+    return url.searchParams.get(param);
+  }
+
+  function loadClients(){
+    try{ return JSON.parse(localStorage.getItem('est_clientes')||'[]'); }catch(e){return []}
+  }
+  function loadAgenda(){
+    try{ return JSON.parse(localStorage.getItem('est_agenda')||'[]'); }catch(e){return []}
+  }
+  function loadAtend(){
+    try{ return JSON.parse(localStorage.getItem('est_atendimentos')||'[]'); }catch(e){return []}
+  }
+
+  const id = qs('id');
+  const clients = loadClients();
+  const client = clients.find(c=>c.id===id);
+  if(!client){ document.getElementById('nomeDetalhe').innerText = 'Cliente não encontrado'; document.getElementById('fotoClienteDetalhe').style.display='none'; throw new Error('Cliente não encontrado'); }
+
+  document.getElementById('nomeDetalhe').innerText = client.nome;
+  document.getElementById('idadeDetalhe').innerText = 'Idade: ' + (client.idade||'-');
+  document.getElementById('alergiaDetalhe').innerText = 'Alergia: ' + (client.alergia||'-');
+  const anamnesis = client.anamnesis || {};
+  
+  // Carregar dados pessoais
+  document.getElementById('nomeCliente').value = (anamnesis.dadosPessoais && anamnesis.dadosPessoais.nome) || client.nome || '';
+  document.getElementById('dataNascimento').value = (anamnesis.dadosPessoais && anamnesis.dadosPessoais.dataNascimento) || '';
+  document.getElementById('idadeCliente').value = (anamnesis.dadosPessoais && anamnesis.dadosPessoais.idade) || client.idade || '';
+  document.getElementById('sexoCliente').value = (anamnesis.dadosPessoais && anamnesis.dadosPessoais.sexo) || '';
+  document.getElementById('cpfCliente').value = (anamnesis.dadosPessoais && anamnesis.dadosPessoais.cpf) || '';
+  document.getElementById('telefoneCliente').value = (anamnesis.dadosPessoais && anamnesis.dadosPessoais.telefone) || '';
+  document.getElementById('emailCliente').value = (anamnesis.dadosPessoais && anamnesis.dadosPessoais.email) || '';
+  document.getElementById('enderecoCliente').value = (anamnesis.dadosPessoais && anamnesis.dadosPessoais.endereco) || '';
+  
+  // Carregar queixa principal
+  document.getElementById('queixaPrincipal').value = (anamnesis.queixaPrincipal && anamnesis.queixaPrincipal.motivo) || '';
+  document.getElementById('resultadoEsperado').value = (anamnesis.queixaPrincipal && anamnesis.queixaPrincipal.resultadoEsperado) || '';
+  
+  // Carregar histórico de saúde
+  if (anamnesis.historicoSaude) {
+    document.getElementById('hipertensao').checked = anamnesis.historicoSaude.hipertensao || false;
+    document.getElementById('diabetes').checked = anamnesis.historicoSaude.diabetes || false;
+    document.getElementById('cardiacos').checked = anamnesis.historicoSaude.cardiacos || false;
+    document.getElementById('renais').checked = anamnesis.historicoSaude.renais || false;
+    document.getElementById('hepaticos').checked = anamnesis.historicoSaude.hepaticos || false;
+    document.getElementById('hormonais').checked = anamnesis.historicoSaude.hormonais || false;
+    document.getElementById('epilepsia').checked = anamnesis.historicoSaude.epilepsia || false;
+    document.getElementById('cancer').checked = anamnesis.historicoSaude.cancer || false;
+    document.getElementById('autoimunes').checked = anamnesis.historicoSaude.autoimunes || false;
+    document.getElementById('circulatorios').checked = anamnesis.historicoSaude.circulatorios || false;
+    document.getElementById('cicatrizacao').checked = anamnesis.historicoSaude.cicatrizacao || false;
+    document.getElementById('trombose').checked = anamnesis.historicoSaude.trombose || false;
+    document.getElementById('gestante').checked = anamnesis.historicoSaude.gestante || false;
+    document.getElementById('lactante').checked = anamnesis.historicoSaude.lactante || false;
+    document.getElementById('historicoSaudeDetalhes').value = anamnesis.historicoSaude.detalhes || '';
+  }
+  
+  // Carregar medicamentos
+  if (anamnesis.medicamentos) {
+    if (anamnesis.medicamentos.usoContinuo) {
+      document.querySelector(`input[name="medicamentos"][value="${anamnesis.medicamentos.usoContinuo}"]`).checked = true;
+    }
+    document.getElementById('medicamentosQuais').value = anamnesis.medicamentos.quais || '';
+    if (anamnesis.medicamentos.anticoncepcional) {
+      document.querySelector(`input[name="anticoncepcional"][value="${anamnesis.medicamentos.anticoncepcional}"]`).checked = true;
+    }
+    if (anamnesis.medicamentos.anticoagulantes) {
+      document.querySelector(`input[name="anticoagulantes"][value="${anamnesis.medicamentos.anticoagulantes}"]`).checked = true;
+    }
+    if (anamnesis.medicamentos.corticoides) {
+      document.querySelector(`input[name="corticoides"][value="${anamnesis.medicamentos.corticoides}"]`).checked = true;
+    }
+  }
+  
+  // Carregar alergias
+  if (anamnesis.alergias) {
+    if (anamnesis.alergias.possui) {
+      document.querySelector(`input[name="alergias"][value="${anamnesis.alergias.possui}"]`).checked = true;
+    }
+    document.getElementById('alergiasQuais').value = anamnesis.alergias.quais || '';
+  }
+  
+  // Carregar hábitos de vida
+  if (anamnesis.habitosVida) {
+    if (anamnesis.habitosVida.atividadeFisica) {
+      document.querySelector(`input[name="atividadeFisica"][value="${anamnesis.habitosVida.atividadeFisica}"]`).checked = true;
+    }
+    document.getElementById('atividadeFrequencia').value = anamnesis.habitosVida.frequencia || '';
+    if (anamnesis.habitosVida.fuma) {
+      document.querySelector(`input[name="fuma"][value="${anamnesis.habitosVida.fuma}"]`).checked = true;
+    }
+    if (anamnesis.habitosVida.alcool) {
+      document.querySelector(`input[name="alcool"][value="${anamnesis.habitosVida.alcool}"]`).checked = true;
+    }
+    document.getElementById('ingestaoAgua').value = anamnesis.habitosVida.ingestaoAgua || '';
+    if (anamnesis.habitosVida.alimentacao) {
+      document.querySelector(`input[name="alimentacao"][value="${anamnesis.habitosVida.alimentacao}"]`).checked = true;
+    }
+  }
+  
+  // Carregar histórico estético
+  if (anamnesis.historicoEstetico) {
+    if (anamnesis.historicoEstetico.procedimentosAnteriores) {
+      document.querySelector(`input[name="procedimentosAnteriores"][value="${anamnesis.historicoEstetico.procedimentosAnteriores}"]`).checked = true;
+    }
+    document.getElementById('procedimentosQuais').value = anamnesis.historicoEstetico.quais || '';
+    if (anamnesis.historicoEstetico.intercorrencias) {
+      document.querySelector(`input[name="intercorrencias"][value="${anamnesis.historicoEstetico.intercorrencias}"]`).checked = true;
+    }
+    document.getElementById('intercorrenciasQuais').value = anamnesis.historicoEstetico.quaisIntercorrencias || '';
+  }
+  
+  // Carregar avaliação da pele
+  if (anamnesis.avaliacaoPele) {
+    if (anamnesis.avaliacaoPele.tipo) {
+      document.querySelector(`input[name="tipoPele"][value="${anamnesis.avaliacaoPele.tipo}"]`).checked = true;
+    }
+    if (anamnesis.avaliacaoPele.fototipo) {
+      document.querySelector(`input[name="fototipo"][value="${anamnesis.avaliacaoPele.fototipo}"]`).checked = true;
+    }
+    if (anamnesis.avaliacaoPele.presenca) {
+      document.getElementById('acne').checked = anamnesis.avaliacaoPele.presenca.acne || false;
+      document.getElementById('manchas').checked = anamnesis.avaliacaoPele.presenca.manchas || false;
+      document.getElementById('rugas').checked = anamnesis.avaliacaoPele.presenca.rugas || false;
+      document.getElementById('flacidez').checked = anamnesis.avaliacaoPele.presenca.flacidez || false;
+      document.getElementById('celulite').checked = anamnesis.avaliacaoPele.presenca.celulite || false;
+      document.getElementById('estrias').checked = anamnesis.avaliacaoPele.presenca.estrias || false;
+      document.getElementById('oleosidade').checked = anamnesis.avaliacaoPele.presenca.oleosidade || false;
+      document.getElementById('sensibilidade').checked = anamnesis.avaliacaoPele.presenca.sensibilidade || false;
+    }
+    document.getElementById('avaliacaoObservacoes').value = anamnesis.avaliacaoPele.observacoes || '';
+  }
+
+  // Carregar avaliação física
+  if (anamnesis.avaliacaoFisica) {
+    document.getElementById('percentualGordura').value = anamnesis.avaliacaoFisica.percentualGordura || '';
+    document.getElementById('massaMagra').value = anamnesis.avaliacaoFisica.massaMagra || '';
+    document.getElementById('aguaCorporal').value = anamnesis.avaliacaoFisica.aguaCorporal || '';
+    document.getElementById('gorduraVisceral').value = anamnesis.avaliacaoFisica.gorduraVisceral || '';
+    document.getElementById('tmb').value = anamnesis.avaliacaoFisica.tmb || '';
+    document.getElementById('idadeMetabolica').value = anamnesis.avaliacaoFisica.idadeMetabolica || '';
+
+    if (anamnesis.avaliacaoFisica.distribuicaoCorporal) {
+      document.getElementById('bracoDireito').value = anamnesis.avaliacaoFisica.distribuicaoCorporal.bracoDireito || '';
+      document.getElementById('bracoEsquerdo').value = anamnesis.avaliacaoFisica.distribuicaoCorporal.bracoEsquerdo || '';
+      document.getElementById('pernaDireita').value = anamnesis.avaliacaoFisica.distribuicaoCorporal.pernaDireita || '';
+      document.getElementById('pernaEsquerda').value = anamnesis.avaliacaoFisica.distribuicaoCorporal.pernaEsquerda || '';
+      document.getElementById('tronco').value = anamnesis.avaliacaoFisica.distribuicaoCorporal.tronco || '';
+      document.getElementById('quadril').value = anamnesis.avaliacaoFisica.distribuicaoCorporal.quadril || '';
+    }
+
+    document.getElementById('avaliacaoFisicaObservacoes').value = anamnesis.avaliacaoFisica.observacoes || '';
+  }
+
+  // Carregar contraindicações
+  if (anamnesis.contraindicacoes) {
+    if (anamnesis.contraindicacoes.possui) {
+      document.querySelector(`input[name="contraindicacoes"][value="${anamnesis.contraindicacoes.possui}"]`).checked = true;
+    }
+    document.getElementById('contraindicacoesQuais').value = anamnesis.contraindicacoes.quais || '';
+  }
+  
+  if(client.foto) document.getElementById('fotoClienteDetalhe').src = client.foto; else document.getElementById('fotoClienteDetalhe').style.display='none';
+
+  const agenda = loadAgenda().filter(a=>a.clientId===client.id && a.status !== 'cancelado' && a.status !== 'realizado');
+  const at = loadAtend().filter(a=>a.clienteId===client.id);
+
+  const ulA = document.getElementById('detAgenda');
+  if(agenda.length===0) ulA.innerHTML = '<li class="small">Nenhum agendamento futuro</li>';
+  agenda.forEach(a=>{
+    const li=document.createElement('li');
+    const statusIcon = getStatusIcon(a.status);
+    const statusText = getStatusText(a.status);
+    li.innerHTML = `${a.data} ${a.hora} — ${a.duracao||60}min ${statusIcon} ${statusText}`;
+    if(a.observacoes) {
+      li.innerHTML += `<br><small style="color:#6b7280">${a.observacoes}</small>`;
+    }
+    ulA.appendChild(li);
+  });
+
+  const ulH = document.getElementById('detHistorico');
+  if(at.length===0) ulH.innerHTML = '<li class="small">Nenhum atendimento registrado</li>';
+  at.forEach(a=>{ const li=document.createElement('li'); li.innerText = `${a.data||''} ${a.hora||''} — R$ ${Number(a.valor).toFixed(2)}`; ulH.appendChild(li); });
+
+function salvarAnamnesis() {
+  const anamnesis = {
+    dadosPessoais: {
+      nome: document.getElementById('nomeCliente').value.trim(),
+      dataNascimento: document.getElementById('dataNascimento').value,
+      idade: document.getElementById('idadeCliente').value.trim(),
+      sexo: document.getElementById('sexoCliente').value,
+      cpf: document.getElementById('cpfCliente').value.trim(),
+      telefone: document.getElementById('telefoneCliente').value.trim(),
+      email: document.getElementById('emailCliente').value.trim(),
+      endereco: document.getElementById('enderecoCliente').value.trim()
+    },
+    queixaPrincipal: {
+      motivo: document.getElementById('queixaPrincipal').value.trim(),
+      resultadoEsperado: document.getElementById('resultadoEsperado').value.trim()
+    },
+    historicoSaude: {
+      hipertensao: document.getElementById('hipertensao').checked,
+      diabetes: document.getElementById('diabetes').checked,
+      cardiacos: document.getElementById('cardiacos').checked,
+      renais: document.getElementById('renais').checked,
+      hepaticos: document.getElementById('hepaticos').checked,
+      hormonais: document.getElementById('hormonais').checked,
+      epilepsia: document.getElementById('epilepsia').checked,
+      cancer: document.getElementById('cancer').checked,
+      autoimunes: document.getElementById('autoimunes').checked,
+      circulatorios: document.getElementById('circulatorios').checked,
+      cicatrizacao: document.getElementById('cicatrizacao').checked,
+      trombose: document.getElementById('trombose').checked,
+      gestante: document.getElementById('gestante').checked,
+      lactante: document.getElementById('lactante').checked,
+      detalhes: document.getElementById('historicoSaudeDetalhes').value.trim()
+    },
+    medicamentos: {
+      usoContinuo: document.querySelector('input[name="medicamentos"]:checked')?.value || '',
+      quais: document.getElementById('medicamentosQuais').value.trim(),
+      anticoncepcional: document.querySelector('input[name="anticoncepcional"]:checked')?.value || '',
+      anticoagulantes: document.querySelector('input[name="anticoagulantes"]:checked')?.value || '',
+      corticoides: document.querySelector('input[name="corticoides"]:checked')?.value || ''
+    },
+    alergias: {
+      possui: document.querySelector('input[name="alergias"]:checked')?.value || '',
+      quais: document.getElementById('alergiasQuais').value.trim()
+    },
+    habitosVida: {
+      atividadeFisica: document.querySelector('input[name="atividadeFisica"]:checked')?.value || '',
+      frequencia: document.getElementById('atividadeFrequencia').value.trim(),
+      fuma: document.querySelector('input[name="fuma"]:checked')?.value || '',
+      alcool: document.querySelector('input[name="alcool"]:checked')?.value || '',
+      ingestaoAgua: document.getElementById('ingestaoAgua').value.trim(),
+      alimentacao: document.querySelector('input[name="alimentacao"]:checked')?.value || ''
+    },
+    historicoEstetico: {
+      procedimentosAnteriores: document.querySelector('input[name="procedimentosAnteriores"]:checked')?.value || '',
+      quais: document.getElementById('procedimentosQuais').value.trim(),
+      intercorrencias: document.querySelector('input[name="intercorrencias"]:checked')?.value || '',
+      quaisIntercorrencias: document.getElementById('intercorrenciasQuais').value.trim()
+    },
+    
+    // Avaliação da pele
+    avaliacaoPele: {
+      tipo: document.querySelector('input[name="tipoPele"]:checked')?.value || '',
+      fototipo: document.querySelector('input[name="fototipo"]:checked')?.value || '',
+      presenca: {
+        acne: document.getElementById('acne').checked,
+        manchas: document.getElementById('manchas').checked,
+        rugas: document.getElementById('rugas').checked,
+        flacidez: document.getElementById('flacidez').checked,
+        celulite: document.getElementById('celulite').checked,
+        estrias: document.getElementById('estrias').checked,
+        oleosidade: document.getElementById('oleosidade').checked,
+        sensibilidade: document.getElementById('sensibilidade').checked
+      },
+      observacoes: document.getElementById('avaliacaoObservacoes').value.trim()
+    },
+
+    // Avaliação física
+    avaliacaoFisica: {
+      percentualGordura: parseFloat(document.getElementById('percentualGordura').value) || null,
+      massaMagra: parseFloat(document.getElementById('massaMagra').value) || null,
+      aguaCorporal: parseFloat(document.getElementById('aguaCorporal').value) || null,
+      gorduraVisceral: parseFloat(document.getElementById('gorduraVisceral').value) || null,
+      tmb: parseInt(document.getElementById('tmb').value) || null,
+      idadeMetabolica: parseInt(document.getElementById('idadeMetabolica').value) || null,
+      distribuicaoCorporal: {
+        bracoDireito: parseFloat(document.getElementById('bracoDireito').value) || null,
+        bracoEsquerdo: parseFloat(document.getElementById('bracoEsquerdo').value) || null,
+        pernaDireita: parseFloat(document.getElementById('pernaDireita').value) || null,
+        pernaEsquerda: parseFloat(document.getElementById('pernaEsquerda').value) || null,
+        tronco: parseFloat(document.getElementById('tronco').value) || null,
+        quadril: parseFloat(document.getElementById('quadril').value) || null
+      },
+      observacoes: document.getElementById('avaliacaoFisicaObservacoes').value.trim()
+    },
+
+    // Contraindicações
+    contraindicacoes: {
+      possui: document.querySelector('input[name="contraindicacoes"]:checked')?.value || '',
+      quais: document.getElementById('contraindicacoesQuais').value.trim()
+    }
+  };
+  
+  const clients = loadClients();
+  const client = clients.find(c=>c.id===qs('id'));
+  if(client) {
+    client.anamnesis = anamnesis;
+    try{ localStorage.setItem('est_clientes', JSON.stringify(clients)); }catch(e){}
+    alert('Anamnese salva com sucesso!');
+  }
+}
+
+function getStatusIcon(status) {
+  const icons = {
+    agendado: '🕐',
+    confirmado: '✅',
+    cancelado: '❌',
+    realizado: '✔️'
+  };
+  return icons[status] || '❓';
+}
+
+function getStatusText(status) {
+  const textos = {
+    agendado: 'Agendado',
+    confirmado: 'Confirmado',
+    cancelado: 'Cancelado',
+    realizado: 'Realizado'
+  };
+  return textos[status] || 'Desconhecido';
+}
+
+function exportarClienteIndividual() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const clienteId = urlParams.get('id');
+  
+  if (!clienteId) {
+    alert('ID do cliente não encontrado!');
+    return;
+  }
+
+  const clientes = JSON.parse(localStorage.getItem('est_clientes') || '[]');
+  const cliente = clientes.find(c => c.id === clienteId);
+  
+  if (!cliente) {
+    alert('Cliente não encontrado!');
+    return;
+  }
+
+  const formato = prompt('Escolha o formato de exportação:\n1 - JSON (completo)\n2 - TXT (relatório detalhado)\n3 - PDF (ficha profissional)\n\nDigite o número da opção:');
+
+  if (!formato) return;
+
+  const dataAtual = new Date().toISOString().split('T')[0];
+  const nomeArquivo = `cliente_${cliente.nome.replace(/[^a-zA-Z0-9]/g, '_')}_${dataAtual}`;
+
+  switch (formato) {
+    case '1':
+      exportarClienteJSON(cliente, nomeArquivo);
+      break;
+    case '2':
+      exportarClienteTXT(cliente, nomeArquivo);
+      break;
+    case '3':
+      exportarClientePDF(cliente, nomeArquivo);
+      break;
+    default:
+      alert('Opção inválida!');
+  }
+}
+
+function exportarClienteJSON(cliente, nomeArquivo) {
+  const dados = {
+    cliente: cliente,
+    exportadoEm: new Date().toISOString(),
+    versao: '1.0'
+  };
+
+  const json = JSON.stringify(dados, null, 2);
+  downloadArquivoCliente(json, `${nomeArquivo}.json`, 'application/json');
+}
+
+function exportarClienteTXT(cliente, nomeArquivo) {
+  let conteudo = `FICHA DO CLIENTE\n`;
+  conteudo += '='.repeat(50) + '\n\n';
+  conteudo += `Nome: ${cliente.nome}\n`;
+  if (cliente.idade) conteudo += `Idade: ${cliente.idade} anos\n`;
+  if (cliente.alergia) conteudo += `Alergias: ${cliente.alergia}\n`;
+  conteudo += `Data de Exportação: ${new Date().toLocaleDateString('pt-BR')}\n\n`;
+
+  const anamnesis = cliente.anamnesis;
+  if (anamnesis) {
+    // Dados Pessoais
+    const dadosPessoais = anamnesis.dadosPessoais;
+    if (dadosPessoais) {
+      conteudo += 'DADOS PESSOAIS\n';
+      conteudo += '-'.repeat(20) + '\n';
+      if (dadosPessoais.dataNascimento) conteudo += `Data de Nascimento: ${dadosPessoais.dataNascimento}\n`;
+      if (dadosPessoais.sexo) conteudo += `Sexo: ${dadosPessoais.sexo}\n`;
+      if (dadosPessoais.cpf) conteudo += `CPF: ${dadosPessoais.cpf}\n`;
+      if (dadosPessoais.telefone) conteudo += `Telefone: ${dadosPessoais.telefone}\n`;
+      if (dadosPessoais.email) conteudo += `E-mail: ${dadosPessoais.email}\n`;
+      if (dadosPessoais.endereco) conteudo += `Endereço: ${dadosPessoais.endereco}\n`;
+      conteudo += '\n';
+    }
+
+    // Queixa Principal
+    const queixaPrincipal = anamnesis.queixaPrincipal;
+    if (queixaPrincipal) {
+      conteudo += 'QUEIXA PRINCIPAL\n';
+      conteudo += '-'.repeat(20) + '\n';
+      if (queixaPrincipal.motivo) conteudo += `Motivo: ${queixaPrincipal.motivo}\n`;
+      if (queixaPrincipal.resultadoEsperado) conteudo += `Resultado Esperado: ${queixaPrincipal.resultadoEsperado}\n`;
+      conteudo += '\n';
+    }
+
+    // Histórico de Saúde
+    const historicoSaude = anamnesis.historicoSaude;
+    if (historicoSaude) {
+      conteudo += 'HISTÓRICO DE SAÚDE\n';
+      conteudo += '-'.repeat(20) + '\n';
+      if (historicoSaude.hipertensao) conteudo += '- Hipertensão\n';
+      if (historicoSaude.diabetes) conteudo += '- Diabetes\n';
+      if (historicoSaude.cardiacos) conteudo += '- Problemas cardíacos\n';
+      if (historicoSaude.renais) conteudo += '- Problemas renais\n';
+      if (historicoSaude.hepaticos) conteudo += '- Problemas hepáticos\n';
+      if (historicoSaude.hormonais) conteudo += '- Distúrbios hormonais\n';
+      if (historicoSaude.epilepsia) conteudo += '- Epilepsia\n';
+      if (historicoSaude.cancer) conteudo += '- Câncer\n';
+      if (historicoSaude.autoimunes) conteudo += '- Doenças autoimunes\n';
+      if (historicoSaude.circulatorios) conteudo += '- Problemas circulatórios\n';
+      if (historicoSaude.cicatrizacao) conteudo += '- Problemas de cicatrização\n';
+      if (historicoSaude.trombose) conteudo += '- Trombose\n';
+      if (historicoSaude.gestante) conteudo += '- Gestante\n';
+      if (historicoSaude.lactante) conteudo += '- Lactante\n';
+      if (historicoSaude.detalhes) conteudo += `Detalhes: ${historicoSaude.detalhes}\n`;
+      conteudo += '\n';
+    }
+
+    // Avaliação Física
+    const avaliacaoFisica = anamnesis.avaliacaoFisica;
+    if (avaliacaoFisica) {
+      conteudo += 'AVALIAÇÃO FÍSICA\n';
+      conteudo += '-'.repeat(20) + '\n';
+      if (avaliacaoFisica.percentualGordura) conteudo += `Percentual de Gordura: ${avaliacaoFisica.percentualGordura}%\n`;
+      if (avaliacaoFisica.massaMagra) conteudo += `Massa Magra: ${avaliacaoFisica.massaMagra}kg\n`;
+      if (avaliacaoFisica.aguaCorporal) conteudo += `Água Corporal: ${avaliacaoFisica.aguaCorporal}%\n`;
+      if (avaliacaoFisica.gorduraVisceral) conteudo += `Gordura Visceral: ${avaliacaoFisica.gorduraVisceral}\n`;
+      if (avaliacaoFisica.tmb) conteudo += `TMB: ${avaliacaoFisica.tmb} kcal/dia\n`;
+      if (avaliacaoFisica.idadeMetabolica) conteudo += `Idade Metabólica: ${avaliacaoFisica.idadeMetabolica} anos\n`;
+
+      const distribuicao = avaliacaoFisica.distribuicaoCorporal;
+      if (distribuicao) {
+        conteudo += '\nDistribuição Corporal:\n';
+        if (distribuicao.bracoDireito) conteudo += `- Braço Direito: ${distribuicao.bracoDireito}%\n`;
+        if (distribuicao.bracoEsquerdo) conteudo += `- Braço Esquerdo: ${distribuicao.bracoEsquerdo}%\n`;
+        if (distribuicao.pernaDireita) conteudo += `- Perna Direita: ${distribuicao.pernaDireita}%\n`;
+        if (distribuicao.pernaEsquerda) conteudo += `- Perna Esquerda: ${distribuicao.pernaEsquerda}%\n`;
+        if (distribuicao.tronco) conteudo += `- Tronco: ${distribuicao.tronco}%\n`;
+        if (distribuicao.quadril) conteudo += `- Quadril: ${distribuicao.quadril}%\n`;
+      }
+
+      if (avaliacaoFisica.observacoes) conteudo += `\nObservações: ${avaliacaoFisica.observacoes}\n`;
+      conteudo += '\n';
+    }
+  }
+
+  downloadArquivoCliente(conteudo, `${nomeArquivo}.txt`, 'text/plain');
+}
+
+function downloadArquivoCliente(conteudo, nomeArquivo, tipoMime) {
+  const blob = new Blob([conteudo], { type: tipoMime });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = nomeArquivo;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  URL.revokeObjectURL(url);
+}
+
+function exportarClientePDF(cliente, nomeArquivo) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Configurações iniciais
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const pageHeight = doc.internal.pageSize.getHeight();
+  let yPosition = 20;
+
+  // Função para adicionar cabeçalho em todas as páginas
+  function adicionarCabecalho() {
+    // Linha superior
+    doc.setLineWidth(0.5);
+    doc.line(20, 15, pageWidth - 20, 15);
+
+    // Nome da clínica
+    doc.setFontSize(18);
+    doc.setFont('helvetica', 'bold');
+    doc.text('CLÍNICA DE ESTÉTICA BELLA VITA', pageWidth / 2, 25, { align: 'center' });
+
+    // Informações da clínica
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Rua das Flores, 123 - Centro - São Paulo/SP - CEP: 01234-567', pageWidth / 2, 32, { align: 'center' });
+    doc.text('Telefone: (11) 99999-8888 | E-mail: contato@clinicabellavita.com.br', pageWidth / 2, 37, { align: 'center' });
+    doc.text('CNPJ: 12.345.678/0001-90 | Responsável Técnico: Dra. Maria Silva - CREA: 123456/SP', pageWidth / 2, 42, { align: 'center' });
+
+    // Linha inferior do cabeçalho
+    doc.line(20, 48, pageWidth - 20, 48);
+
+    return 55; // Retorna a posição Y após o cabeçalho
+  }
+
+  // Adicionar cabeçalho na primeira página
+  yPosition = adicionarCabecalho();
+
+  // Título da ficha
+  doc.setFontSize(16);
+  doc.setFont('helvetica', 'bold');
+  doc.text('FICHA DO CLIENTE', pageWidth / 2, yPosition, { align: 'center' });
+  yPosition += 12;
+
+  // Nome do cliente
+  doc.setFontSize(14);
+  doc.text(cliente.nome, pageWidth / 2, yPosition, { align: 'center' });
+  yPosition += 10;
+
+  // Data de geração
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, pageWidth / 2, yPosition, { align: 'center' });
+  yPosition += 15;
+
+  // Informações básicas
+  doc.setFontSize(12);
+  doc.setFont('helvetica', 'bold');
+  doc.text('INFORMAÇÕES BÁSICAS', 20, yPosition);
+  yPosition += 10;
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+
+  if (cliente.idade) {
+    doc.text(`Idade: ${cliente.idade} anos`, 30, yPosition);
+    yPosition += 8;
+  }
+
+  if (cliente.alergia) {
+    doc.text(`Alergias: ${cliente.alergia}`, 30, yPosition);
+    yPosition += 8;
+  }
+
+  const anamnesis = cliente.anamnesis;
+  if (anamnesis) {
+    // Dados Pessoais
+    const dadosPessoais = anamnesis.dadosPessoais;
+    if (dadosPessoais) {
+      // Verificar quebra de página
+      if (yPosition > 250) {
+        doc.addPage();
+        yPosition = adicionarCabecalho();
+      }
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('DADOS PESSOAIS', 20, yPosition);
+      yPosition += 10;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+
+      if (dadosPessoais.dataNascimento) {
+        doc.text(`Data de Nascimento: ${dadosPessoais.dataNascimento}`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (dadosPessoais.sexo) {
+        doc.text(`Sexo: ${dadosPessoais.sexo}`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (dadosPessoais.cpf) {
+        doc.text(`CPF: ${dadosPessoais.cpf}`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (dadosPessoais.telefone) {
+        doc.text(`Telefone: ${dadosPessoais.telefone}`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (dadosPessoais.email) {
+        doc.text(`E-mail: ${dadosPessoais.email}`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (dadosPessoais.endereco) {
+        doc.text(`Endereço: ${dadosPessoais.endereco}`, 30, yPosition);
+        yPosition += 8;
+      }
+    }
+
+    // Queixa Principal
+    const queixaPrincipal = anamnesis.queixaPrincipal;
+    if (queixaPrincipal) {
+      // Verificar quebra de página
+      if (yPosition > 220) {
+        doc.addPage();
+        yPosition = adicionarCabecalho();
+      }
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('QUEIXA PRINCIPAL', 20, yPosition);
+      yPosition += 10;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+
+      if (queixaPrincipal.motivo) {
+        doc.text(`Motivo: ${queixaPrincipal.motivo}`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (queixaPrincipal.resultadoEsperado) {
+        doc.text(`Resultado Esperado: ${queixaPrincipal.resultadoEsperado}`, 30, yPosition);
+        yPosition += 8;
+      }
+    }
+
+    // Avaliação Física
+    const avaliacaoFisica = anamnesis.avaliacaoFisica;
+    if (avaliacaoFisica) {
+      // Verificar quebra de página
+      if (yPosition > 200) {
+        doc.addPage();
+        yPosition = adicionarCabecalho();
+      }
+
+      doc.setFontSize(12);
+      doc.setFont('helvetica', 'bold');
+      doc.text('AVALIAÇÃO FÍSICA', 20, yPosition);
+      yPosition += 10;
+
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'normal');
+
+      if (avaliacaoFisica.percentualGordura) {
+        doc.text(`Percentual de Gordura: ${avaliacaoFisica.percentualGordura}%`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (avaliacaoFisica.massaMagra) {
+        doc.text(`Massa Magra: ${avaliacaoFisica.massaMagra}kg`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (avaliacaoFisica.aguaCorporal) {
+        doc.text(`Água Corporal: ${avaliacaoFisica.aguaCorporal}%`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (avaliacaoFisica.gorduraVisceral) {
+        doc.text(`Gordura Visceral: ${avaliacaoFisica.gorduraVisceral}`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (avaliacaoFisica.tmb) {
+        doc.text(`TMB: ${avaliacaoFisica.tmb} kcal/dia`, 30, yPosition);
+        yPosition += 8;
+      }
+      if (avaliacaoFisica.idadeMetabolica) {
+        doc.text(`Idade Metabólica: ${avaliacaoFisica.idadeMetabolica} anos`, 30, yPosition);
+        yPosition += 8;
+      }
+
+      // Distribuição Corporal
+      const distribuicao = avaliacaoFisica.distribuicaoCorporal;
+      if (distribuicao) {
+        // Verificar quebra de página
+        if (yPosition > 180) {
+          doc.addPage();
+          yPosition = adicionarCabecalho();
+        }
+
+        doc.setFontSize(11);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Distribuição Corporal (Segmentar):', 30, yPosition);
+        yPosition += 10;
+
+        doc.setFontSize(9);
+        doc.setFont('helvetica', 'normal');
+
+        if (distribuicao.bracoDireito) doc.text(`• Braço Direito: ${distribuicao.bracoDireito}%`, 40, yPosition), yPosition += 6;
+        if (distribuicao.bracoEsquerdo) doc.text(`• Braço Esquerdo: ${distribuicao.bracoEsquerdo}%`, 40, yPosition), yPosition += 6;
+        if (distribuicao.pernaDireita) doc.text(`• Perna Direita: ${distribuicao.pernaDireita}%`, 40, yPosition), yPosition += 6;
+        if (distribuicao.pernaEsquerda) doc.text(`• Perna Esquerda: ${distribuicao.pernaEsquerda}%`, 40, yPosition), yPosition += 6;
+        if (distribuicao.tronco) doc.text(`• Tronco: ${distribuicao.tronco}%`, 40, yPosition), yPosition += 6;
+        if (distribuicao.quadril) doc.text(`• Quadril: ${distribuicao.quadril}%`, 40, yPosition), yPosition += 6;
+      }
+
+      if (avaliacaoFisica.observacoes) {
+        // Verificar quebra de página
+        if (yPosition > 250) {
+          doc.addPage();
+          yPosition = adicionarCabecalho();
+        }
+
+        doc.setFontSize(10);
+        doc.setFont('helvetica', 'bold');
+        doc.text('Observações:', 30, yPosition);
+        yPosition += 8;
+
+        doc.setFont('helvetica', 'normal');
+        const observacoes = doc.splitTextToSize(avaliacaoFisica.observacoes, 150);
+        doc.text(observacoes, 30, yPosition);
+      }
+    }
+  }
+
+  // Adicionar rodapé em todas as páginas
+  const totalPages = doc.getNumberOfPages();
+  for (let i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+
+    // Linha do rodapé
+    doc.setLineWidth(0.3);
+    doc.line(20, pageHeight - 25, pageWidth - 20, pageHeight - 25);
+
+    // Informações do rodapé
+    doc.setFontSize(7);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Clínica de Estética Bella Vita - Documento confidencial para uso profissional', pageWidth / 2, pageHeight - 18, { align: 'center' });
+    doc.text(`Página ${i} de ${totalPages}`, pageWidth / 2, pageHeight - 12, { align: 'center' });
+    doc.text('Sistema de Gestão Estética - www.clinicabellavita.com.br', pageWidth / 2, pageHeight - 6, { align: 'center' });
+  }
+
+  // Salvar o PDF
+  doc.save(`${nomeArquivo}.pdf`);
+}
+</script>
+</body>
+</html>

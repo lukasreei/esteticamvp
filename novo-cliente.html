@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cadastrar Cliente — MVP Estética</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<main style="max-width: 1200px; margin: 0 auto; padding: 20px;">
+  <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 24px;">
+    <a href="index.html" class="btn secondary" style="display: flex; align-items: center; gap: 8px;">
+      <i class="fas fa-arrow-left"></i> Voltar
+    </a>
+    <h1 style="margin: 0;"><i class="fas fa-user-plus"></i> Cadastrar Novo Cliente</h1>
+  </div>
+
+  <div class="form-container">
+    <div class="form-grid">
+      <input id="nomeCliente" placeholder="Nome do cliente" />
+      <input id="idadeCliente" placeholder="Idade" />
+      <input id="alergiaCliente" placeholder="Alergias (se houver)" />
+      <input id="fotoCliente" type="file" accept="image/*" />
+    </div>
+    <div class="anamnesis-fields">
+      <h3>Anamnese – Clínica de Estética</h3>
+
+      <!-- 1. Dados Pessoais -->
+      <div class="anamnesis-section">
+        <h4>1. Dados Pessoais</h4>
+        <div class="form-grid">
+          <input id="nomeCliente" placeholder="Nome completo" />
+          <input id="dataNascimento" type="date" placeholder="Data de nascimento" />
+          <input id="idadeCliente" placeholder="Idade" />
+          <select id="sexoCliente">
+            <option value="">Sexo</option>
+            <option value="Feminino">Feminino</option>
+            <option value="Masculino">Masculino</option>
+            <option value="Outro">Outro</option>
+          </select>
+          <input id="cpfCliente" placeholder="CPF" />
+          <input id="telefoneCliente" placeholder="Telefone" />
+          <input id="emailCliente" type="email" placeholder="E-mail" />
+          <input id="enderecoCliente" placeholder="Endereço" />
+        </div>
+      </div>
+
+      <!-- 2. Queixa Principal -->
+      <div class="anamnesis-section">
+        <h4>2. Queixa Principal</h4>
+        <textarea id="queixaPrincipal" placeholder="Qual o motivo da sua visita?" rows="3"></textarea>
+        <textarea id="resultadoEsperado" placeholder="Qual resultado espera alcançar com o tratamento?" rows="3"></textarea>
+      </div>
+
+      <!-- 3. Histórico de Saúde -->
+      <div class="anamnesis-section">
+        <h4>3. Histórico de Saúde</h4>
+        <p>Marque SIM ou NÃO:</p>
+        <div class="checkbox-grid">
+          <label><input type="checkbox" id="hipertensao"> Hipertensão</label>
+          <label><input type="checkbox" id="diabetes"> Diabetes</label>
+          <label><input type="checkbox" id="cardiacos"> Problemas cardíacos</label>
+          <label><input type="checkbox" id="renais"> Problemas renais</label>
+          <label><input type="checkbox" id="hepaticos"> Problemas hepáticos</label>
+          <label><input type="checkbox" id="hormonais"> Distúrbios hormonais</label>
+          <label><input type="checkbox" id="epilepsia"> Epilepsia</label>
+          <label><input type="checkbox" id="cancer"> Câncer</label>
+          <label><input type="checkbox" id="autoimunes"> Doenças autoimunes</label>
+          <label><input type="checkbox" id="circulatorios"> Problemas circulatórios</label>
+          <label><input type="checkbox" id="cicatrizacao"> Distúrbios de cicatrização</label>
+          <label><input type="checkbox" id="trombose"> Trombose</label>
+          <label><input type="checkbox" id="gestante"> Gestante</label>
+          <label><input type="checkbox" id="lactante"> Lactante</label>
+        </div>
+        <textarea id="historicoSaudeDetalhes" placeholder="Se sim, quais?" rows="2"></textarea>
+      </div>
+
+      <!-- 4. Uso de Medicamentos -->
+      <div class="anamnesis-section">
+        <h4>4. Uso de Medicamentos</h4>
+        <div class="radio-group">
+          <label>Faz uso contínuo de medicamentos?</label>
+          <label><input type="radio" name="medicamentos" value="sim"> Sim</label>
+          <label><input type="radio" name="medicamentos" value="nao"> Não</label>
+        </div>
+        <textarea id="medicamentosQuais" placeholder="Quais?" rows="2"></textarea>
+
+        <div class="radio-group">
+          <label>Uso de anticoncepcional?</label>
+          <label><input type="radio" name="anticoncepcional" value="sim"> Sim</label>
+          <label><input type="radio" name="anticoncepcional" value="nao"> Não</label>
+        </div>
+
+        <div class="radio-group">
+          <label>Uso de anticoagulantes?</label>
+          <label><input type="radio" name="anticoagulantes" value="sim"> Sim</label>
+          <label><input type="radio" name="anticoagulantes" value="nao"> Não</label>
+        </div>
+
+        <div class="radio-group">
+          <label>Uso de corticoides?</label>
+          <label><input type="radio" name="corticoides" value="sim"> Sim</label>
+          <label><input type="radio" name="corticoides" value="nao"> Não</label>
+        </div>
+      </div>
+
+      <!-- 5. Alergias -->
+      <div class="anamnesis-section">
+        <h4>5. Alergias</h4>
+        <div class="radio-group">
+          <label>Possui alergia a medicamentos, cosméticos, alimentos ou substâncias?</label>
+          <label><input type="radio" name="alergias" value="sim"> Sim</label>
+          <label><input type="radio" name="alergias" value="nao"> Não</label>
+        </div>
+        <textarea id="alergiasQuais" placeholder="Quais?" rows="2"></textarea>
+      </div>
+
+      <!-- 6. Hábitos de Vida -->
+      <div class="anamnesis-section">
+        <h4>6. Hábitos de Vida</h4>
+        <div class="radio-group">
+          <label>Pratica atividade física?</label>
+          <label><input type="radio" name="atividadeFisica" value="sim"> Sim</label>
+          <label><input type="radio" name="atividadeFisica" value="nao"> Não</label>
+        </div>
+        <input id="atividadeFrequencia" placeholder="Frequência" />
+
+        <div class="radio-group">
+          <label>Fuma?</label>
+          <label><input type="radio" name="fuma" value="sim"> Sim</label>
+          <label><input type="radio" name="fuma" value="nao"> Não</label>
+        </div>
+
+        <div class="radio-group">
+          <label>Consome bebida alcoólica?</label>
+          <label><input type="radio" name="alcool" value="sim"> Sim</label>
+          <label><input type="radio" name="alcool" value="nao"> Não</label>
+        </div>
+
+        <input id="ingestaoAgua" placeholder="Ingestão de água diária" />
+
+        <div class="radio-group">
+          <label>Alimentação balanceada?</label>
+          <label><input type="radio" name="alimentacao" value="sim"> Sim</label>
+          <label><input type="radio" name="alimentacao" value="nao"> Não</label>
+        </div>
+      </div>
+
+      <!-- 7. Histórico Estético -->
+      <div class="anamnesis-section">
+        <h4>7. Histórico Estético</h4>
+        <div class="radio-group">
+          <label>Já realizou procedimentos estéticos anteriormente?</label>
+          <label><input type="radio" name="procedimentosAnteriores" value="sim"> Sim</label>
+          <label><input type="radio" name="procedimentosAnteriores" value="nao"> Não</label>
+        </div>
+        <textarea id="procedimentosQuais" placeholder="Quais?" rows="2"></textarea>
+
+        <div class="radio-group">
+          <label>Já teve intercorrências ou reações adversas?</label>
+          <label><input type="radio" name="intercorrencias" value="sim"> Sim</label>
+          <label><input type="radio" name="intercorrencias" value="nao"> Não</label>
+        </div>
+        <textarea id="intercorrenciasQuais" placeholder="Quais?" rows="2"></textarea>
+      </div>
+
+      <!-- 8. Avaliação da Pele -->
+      <div class="anamnesis-section">
+        <h4>8. Avaliação da Pele (facial/corporal)</h4>
+        <div class="radio-group">
+          <label>Tipo de pele:</label>
+          <label><input type="radio" name="tipoPele" value="normal"> Normal</label>
+          <label><input type="radio" name="tipoPele" value="oleosa"> Oleosa</label>
+          <label><input type="radio" name="tipoPele" value="seca"> Seca</label>
+          <label><input type="radio" name="tipoPele" value="mista"> Mista</label>
+          <label><input type="radio" name="tipoPele" value="sensivel"> Sensível</label>
+        </div>
+
+        <div class="radio-group">
+          <label>Fototipo (Fitzpatrick):</label>
+          <label><input type="radio" name="fototipo" value="I"> I</label>
+          <label><input type="radio" name="fototipo" value="II"> II</label>
+          <label><input type="radio" name="fototipo" value="III"> III</label>
+          <label><input type="radio" name="fototipo" value="IV"> IV</label>
+          <label><input type="radio" name="fototipo" value="V"> V</label>
+          <label><input type="radio" name="fototipo" value="VI"> VI</label>
+        </div>
+
+        <p>Presença de:</p>
+        <div class="checkbox-grid">
+          <label><input type="checkbox" id="acne"> Acne</label>
+          <label><input type="checkbox" id="manchas"> Manchas</label>
+          <label><input type="checkbox" id="rugas"> Rugas</label>
+          <label><input type="checkbox" id="flacidez"> Flacidez</label>
+          <label><input type="checkbox" id="celulite"> Celulite</label>
+          <label><input type="checkbox" id="estrias"> Estrias</label>
+          <label><input type="checkbox" id="oleosidade"> Oleosidade excessiva</label>
+          <label><input type="checkbox" id="sensibilidade"> Sensibilidade</label>
+        </div>
+        <textarea id="avaliacaoObservacoes" placeholder="Observações" rows="3"></textarea>
+      </div>
+
+      <!-- 9. Avaliação Física/Antropométrica -->
+      <div class="anamnesis-section">
+        <h4>9. Avaliação Física/Antropométrica</h4>
+        <div class="avaliacao-fisica-grid">
+          <div class="anamnesis-field">
+            <label><strong>Percentual de gordura corporal (%):</strong></label>
+            <input id="percentualGordura" type="number" step="0.1" placeholder="Ex: 25.5">
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Massa magra (kg):</strong></label>
+            <input id="massaMagra" type="number" step="0.1" placeholder="Ex: 45.2">
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Água corporal total (%):</strong></label>
+            <input id="aguaCorporal" type="number" step="0.1" placeholder="Ex: 55.8">
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Gordura visceral:</strong></label>
+            <input id="gorduraVisceral" type="number" step="0.1" placeholder="Ex: 8.5">
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Taxa metabólica basal (TMB) - kcal/dia:</strong></label>
+            <input id="tmb" type="number" step="1" placeholder="Ex: 1450">
+          </div>
+          <div class="anamnesis-field">
+            <label><strong>Idade metabólica (anos):</strong></label>
+            <input id="idadeMetabolica" type="number" step="1" placeholder="Ex: 32">
+          </div>
+        </div>
+
+        <div class="distribuicao-corporal">
+          <h5>Distribuição Corporal (Segmentar)</h5>
+          <div class="avaliacao-fisica-grid">
+            <div class="anamnesis-field">
+              <label><strong>Braço direito (%):</strong></label>
+              <input id="bracoDireito" type="number" step="0.1" placeholder="Ex: 12.5">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Braço esquerdo (%):</strong></label>
+              <input id="bracoEsquerdo" type="number" step="0.1" placeholder="Ex: 12.3">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Perna direita (%):</strong></label>
+              <input id="pernaDireita" type="number" step="0.1" placeholder="Ex: 18.7">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Perna esquerda (%):</strong></label>
+              <input id="pernaEsquerda" type="number" step="0.1" placeholder="Ex: 18.5">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Tronco (%):</strong></label>
+              <input id="tronco" type="number" step="0.1" placeholder="Ex: 25.2">
+            </div>
+            <div class="anamnesis-field">
+              <label><strong>Quadril (%):</strong></label>
+              <input id="quadril" type="number" step="0.1" placeholder="Ex: 12.8">
+            </div>
+          </div>
+        </div>
+        <textarea id="avaliacaoFisicaObservacoes" placeholder="Observações sobre a avaliação física" rows="3"></textarea>
+      </div>
+
+      <!-- 10. Contraindicações -->
+      <div class="anamnesis-section">
+        <h4>9. Contraindicações</h4>
+        <div class="radio-group">
+          <label>Possui alguma restrição para procedimentos estéticos?</label>
+          <label><input type="radio" name="contraindicacoes" value="sim"> Sim</label>
+          <label><input type="radio" name="contraindicacoes" value="nao"> Não</label>
+        </div>
+        <textarea id="contraindicacoesQuais" placeholder="Quais?" rows="2"></textarea>
+      </div>
+
+      <input id="fotoCliente" type="file" accept="image/*" style="margin-top: 15px;" />
+    </div>
+    <div class="actions">
+      <button class="btn" onclick="salvarCliente()"><i class="fas fa-save"></i> Salvar Cliente</button>
+      <a href="index.html" class="btn secondary"><i class="fas fa-times"></i> Cancelar</a>
+    </div>
+  </div>
+</main>
+
+<script>
+// Carregar dados do localStorage
+window.clientes = JSON.parse(localStorage.getItem('est_clientes') || '[]');
+window.agenda = JSON.parse(localStorage.getItem('est_agenda') || '[]');
+window.atendimentosConcluidos = JSON.parse(localStorage.getItem('est_atendimentos') || '[]');
+
+function salvarCliente() {
+  const nome = document.getElementById('nomeCliente').value.trim();
+  const idade = document.getElementById('idadeCliente').value.trim();
+  const alergia = document.getElementById('alergiaCliente').value.trim();
+
+  if (!nome) {
+    alert('Nome é obrigatório!');
+    return;
+  }
+
+  // Coletar dados da anamnese
+  const anamnesis = {
+    dadosPessoais: {
+      nome: nome,
+      dataNascimento: document.getElementById('dataNascimento').value,
+      idade: idade,
+      sexo: document.getElementById('sexoCliente').value,
+      cpf: document.getElementById('cpfCliente').value,
+      telefone: document.getElementById('telefoneCliente').value,
+      email: document.getElementById('emailCliente').value,
+      endereco: document.getElementById('enderecoCliente').value
+    },
+    queixaPrincipal: {
+      motivo: document.getElementById('queixaPrincipal').value,
+      resultadoEsperado: document.getElementById('resultadoEsperado').value
+    },
+    historicoSaude: {
+      hipertensao: document.getElementById('hipertensao').checked,
+      diabetes: document.getElementById('diabetes').checked,
+      cardiacos: document.getElementById('cardiacos').checked,
+      renais: document.getElementById('renais').checked,
+      hepaticos: document.getElementById('hepaticos').checked,
+      hormonais: document.getElementById('hormonais').checked,
+      epilepsia: document.getElementById('epilepsia').checked,
+      cancer: document.getElementById('cancer').checked,
+      autoimunes: document.getElementById('autoimunes').checked,
+      circulatorios: document.getElementById('circulatorios').checked,
+      cicatrizacao: document.getElementById('cicatrizacao').checked,
+      trombose: document.getElementById('trombose').checked,
+      gestante: document.getElementById('gestante').checked,
+      lactante: document.getElementById('lactante').checked,
+      detalhes: document.getElementById('historicoSaudeDetalhes').value
+    },
+    medicamentos: {
+      usoContinuo: document.querySelector('input[name="medicamentos"]:checked')?.value,
+      quais: document.getElementById('medicamentosQuais').value,
+      anticoncepcional: document.querySelector('input[name="anticoncepcional"]:checked')?.value,
+      anticoagulantes: document.querySelector('input[name="anticoagulantes"]:checked')?.value,
+      corticoides: document.querySelector('input[name="corticoides"]:checked')?.value
+    },
+    alergias: {
+      possui: document.querySelector('input[name="alergias"]:checked')?.value,
+      quais: document.getElementById('alergiasQuais').value
+    },
+    habitosVida: {
+      atividadeFisica: document.querySelector('input[name="atividadeFisica"]:checked')?.value,
+      frequencia: document.getElementById('atividadeFrequencia').value,
+      fuma: document.querySelector('input[name="fuma"]:checked')?.value,
+      alcool: document.querySelector('input[name="alcool"]:checked')?.value,
+      ingestaoAgua: document.getElementById('ingestaoAgua').value,
+      alimentacao: document.querySelector('input[name="alimentacao"]:checked')?.value
+    },
+    historicoEstetico: {
+      procedimentosAnteriores: document.querySelector('input[name="procedimentosAnteriores"]:checked')?.value,
+      quais: document.getElementById('procedimentosQuais').value,
+      intercorrencias: document.querySelector('input[name="intercorrencias"]:checked')?.value,
+      quaisIntercorrencias: document.getElementById('intercorrenciasQuais').value
+    },
+    avaliacaoPele: {
+      tipo: document.querySelector('input[name="tipoPele"]:checked')?.value,
+      fototipo: document.querySelector('input[name="fototipo"]:checked')?.value,
+      presenca: {
+        acne: document.getElementById('acne').checked,
+        manchas: document.getElementById('manchas').checked,
+        rugas: document.getElementById('rugas').checked,
+        flacidez: document.getElementById('flacidez').checked,
+        celulite: document.getElementById('celulite').checked,
+        estrias: document.getElementById('estrias').checked,
+        oleosidade: document.getElementById('oleosidade').checked,
+        sensibilidade: document.getElementById('sensibilidade').checked
+      },
+      observacoes: document.getElementById('avaliacaoObservacoes').value
+    },
+    avaliacaoFisica: {
+      percentualGordura: parseFloat(document.getElementById('percentualGordura').value) || null,
+      massaMagra: parseFloat(document.getElementById('massaMagra').value) || null,
+      aguaCorporal: parseFloat(document.getElementById('aguaCorporal').value) || null,
+      gorduraVisceral: parseFloat(document.getElementById('gorduraVisceral').value) || null,
+      tmb: parseInt(document.getElementById('tmb').value) || null,
+      idadeMetabolica: parseInt(document.getElementById('idadeMetabolica').value) || null,
+      distribuicaoCorporal: {
+        bracoDireito: parseFloat(document.getElementById('bracoDireito').value) || null,
+        bracoEsquerdo: parseFloat(document.getElementById('bracoEsquerdo').value) || null,
+        pernaDireita: parseFloat(document.getElementById('pernaDireita').value) || null,
+        pernaEsquerda: parseFloat(document.getElementById('pernaEsquerda').value) || null,
+        tronco: parseFloat(document.getElementById('tronco').value) || null,
+        quadril: parseFloat(document.getElementById('quadril').value) || null
+      },
+      observacoes: document.getElementById('avaliacaoFisicaObservacoes').value
+    },
+    contraindicacoes: {
+      possui: document.querySelector('input[name="contraindicacoes"]:checked')?.value,
+      quais: document.getElementById('contraindicacoesQuais').value
+    }
+  };
+
+  const id = 'cliente_' + Date.now();
+  const cliente = { id, nome, idade, alergia, anamnesis, createdAt: new Date().toISOString() };
+
+  // Adicionar foto se existir
+  const fotoInput = document.getElementById('fotoCliente');
+  if (fotoInput && fotoInput.files && fotoInput.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      cliente.foto = e.target.result;
+      window.clientes.push(cliente);
+      localStorage.setItem('est_clientes', JSON.stringify(window.clientes));
+      alert('Cliente cadastrado com sucesso!');
+      window.location.href = 'index.html';
+    };
+    reader.readAsDataURL(fotoInput.files[0]);
+  } else {
+    window.clientes.push(cliente);
+    localStorage.setItem('est_clientes', JSON.stringify(window.clientes));
+    alert('Cliente cadastrado com sucesso!');
+    window.location.href = 'index.html';
+  }
+}
+</script>
+
+</body>
+</html>
