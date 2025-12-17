@@ -41,6 +41,10 @@
       Cancelados<br><strong><span id="canceladosHoje">0</span></strong>
     </div>
     <div class="card">
+      <i class="fas fa-user-clock card-icon"></i>
+      Agendados Hoje<br><strong><span id="agendadosHoje">0</span></strong>
+    </div>
+    <div class="card">
       <i class="fas fa-calendar-alt card-icon"></i>
       Mês<br><strong>R$ <span id="mes">0</span></strong>
     </div>
@@ -48,6 +52,15 @@
       <i class="fas fa-balance-scale card-icon"></i>
       Saldo<br><strong>R$ <span id="saldoDashboard">0</span></strong>
     </div>
+    <div class="card">
+      <i class="fas fa-address-book card-icon"></i>
+      Clientes Cadastrados<br><strong><span id="totalClientes">0</span></strong>
+    </div>
+  </div>
+
+  <h2>Clientes do Dia</h2>
+  <div id="clientesHoje" class="lista-clientes">
+    <!-- Lista de clientes será inserida aqui -->
   </div>
 </section>
 
@@ -73,6 +86,7 @@
       <input id="agendaData" type="date" />
       <input id="agendaHora" type="time" />
       <input id="agendaDuracao" type="number" placeholder="Duração (min)" value="60" />
+      <input id="agendaValor" type="number" step="0.01" placeholder="Valor (R$)" />
     </div>
     <textarea id="agendaObservacoes" placeholder="Observações (opcional)" rows="2" style="width:100%;margin-bottom:12px"></textarea>
     <button class="btn" onclick="adicionarAgenda()"><i class="fas fa-plus"></i> Agendar</button>
@@ -477,6 +491,11 @@ window.agenda = [];
   function mostrar(id) {
     document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
     document.getElementById(id).classList.add('active');
+    
+    // Atualizar dashboard quando for exibido
+    if (id === 'dashboard' && window.Dashboard && typeof window.Dashboard.recomputeTotals === 'function') {
+      window.Dashboard.recomputeTotals();
+    }
   }
 
   // ====== SESSÕES ======
@@ -1484,6 +1503,15 @@ function exportarRelatoriosPDF() {
 <script src="agenda.js"></script>
 <script src="sessions.js"></script>
 <script src="dashboard.js"></script>
+
+<script>
+  // Inicializar dashboard na carga da página
+  window.addEventListener('load', function() {
+    if (window.Dashboard && typeof window.Dashboard.recomputeTotals === 'function') {
+      window.Dashboard.recomputeTotals();
+    }
+  });
+</script>
 
 </body>
 </html>

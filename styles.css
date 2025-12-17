@@ -26,7 +26,7 @@ h1,h2,h3{display:flex;align-items:center;gap:8px;margin:0 0 16px 0}
 h1 i,h2 i,h3 i{color:var(--accent)}
 
 /* Cards */
-.cards{display:grid;grid-template-columns:repeat(4, 1fr);gap:20px;margin-top:12px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:20px;margin-top:12px}
 .card{background:var(--card);padding:22px;border-radius:12px;box-shadow:0 8px 24px rgba(15,23,42,0.06);position:relative}
 .card strong{display:block;font-size:18px;margin-top:8px}
 .card-icon{font-size:24px;color:var(--accent);position:absolute;top:16px;right:16px}
@@ -36,6 +36,14 @@ h1 i,h2 i,h3 i{color:var(--accent)}
 .card:nth-child(4) .card-icon { color: #ef4444; } /* Cancelados - vermelho */
 .card:nth-child(3) strong { color: #065f46; }
 .card:nth-child(4) strong { color: #dc2626; }
+
+/* Lista de clientes do dia */
+.lista-clientes { margin-top: 20px; }
+.lista-clientes ul { list-style: none; padding: 0; }
+.lista-clientes li { background: var(--card); padding: 12px; border-radius: 8px; margin-bottom: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+.lista-clientes li .cliente-info { font-weight: 500; }
+.lista-clientes li .cliente-procedimento { color: var(--muted); font-size: 14px; }
+.lista-clientes li .cliente-hora { font-weight: 600; color: var(--accent); }
 
 /* Lists */
 ul{padding-left:18px}
@@ -547,6 +555,12 @@ canvas{margin-top:20px;background:var(--card);border-radius:10px}
 .hora {
   color: var(--accent-600);
   font-weight: 500;
+  font-size: 10px;
+}
+
+.valor {
+  color: #059669;
+  font-weight: 600;
   font-size: 10px;
 }
 

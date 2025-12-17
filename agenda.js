@@ -11,6 +11,7 @@ window.AgendaModule = {
     const data = document.getElementById('agendaData').value;
     const hora = document.getElementById('agendaHora').value;
     const duracao = parseInt(document.getElementById('agendaDuracao').value) || 60;
+    const valor = parseFloat(document.getElementById('agendaValor').value) || 0;
     const observacoes = document.getElementById('agendaObservacoes').value.trim();
 
     if (!clienteId || !procedimento || !data || !hora) {
@@ -37,6 +38,7 @@ window.AgendaModule = {
       data,
       hora,
       duracao,
+      valor,
       observacoes,
       status: 'agendado', // agendado, confirmado, cancelado, realizado
       criadoEm: new Date().toISOString()
@@ -54,6 +56,7 @@ window.AgendaModule = {
     document.getElementById('agendaData').value = '';
     document.getElementById('agendaHora').value = '';
     document.getElementById('agendaDuracao').value = '';
+    document.getElementById('agendaValor').value = '';
     document.getElementById('agendaObservacoes').value = '';
   },
 
@@ -190,6 +193,7 @@ window.AgendaModule = {
               <div class="cliente-nome">${nome}</div>
               <div class="procedimento">${agendamento.procedimento}</div>
               <div class="hora">${agendamento.hora} (${agendamento.duracao}min)</div>
+              <div class="valor">R$ ${Number(agendamento.valor || 0).toFixed(2)}</div>
             </div>
           `;
           
